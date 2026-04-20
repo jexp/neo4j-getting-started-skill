@@ -1,0 +1,11 @@
+{
+  "nodes": [
+    {"label": "Person", "primaryKey": "id", "properties": ["id", "name", "email", "createdAt"]},
+    {"label": "Post",   "primaryKey": "id", "properties": ["id", "content", "createdAt", "likes"]}
+  ],
+  "relationships": [
+    {"type": "FOLLOWS", "from": "Person", "to": "Person", "properties": []},
+    {"type": "POSTED",  "from": "Person", "to": "Post",   "properties": ["createdAt"]},
+    {"type": "LIKED",   "from": "Person", "to": "Post",   "properties": []}
+  ]
+}

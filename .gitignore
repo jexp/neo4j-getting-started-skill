@@ -1,0 +1,6 @@
+.env
+aura.env
+neo4j-mcp
+__pycache__/
+*.pyc
+tests/results/

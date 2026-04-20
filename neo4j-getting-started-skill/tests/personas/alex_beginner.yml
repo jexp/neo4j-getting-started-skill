@@ -1,0 +1,99 @@
+# Persona: Alex — The Curious Beginner
+# Target completion: ≤15 min autonomous, ≤90 min HITL
+
+persona:
+  id: alex_beginner
+  name: Alex
+  description: "First time with graph databases. Has a personal social network project idea."
+  experience: beginner
+  background: "Knows basic Python, has done SQL tutorials, never used a graph DB"
+
+inputs:
+  domain: social
+  use_case: "friend recommendations and community discovery"
+  experience: beginner
+  db_target: aura-free
+  cloud_provider: gcp
+  data_source: synthetic
+  app_type: notebook
+  language: python
+  framework: none
+  integration: none
+
+# What the skill should produce
+expected_outputs:
+  files:
+    - .env
+    - schema.json
+    - schema.cypher
+    - queries.cypher
+    - notebook.ipynb
+    - requirements.txt
+
+  db_state:
+    min_node_labels: 2      # Person, Post minimum
+    min_rel_types: 1        # FOLLOWS minimum
+    min_nodes: 50
+    min_relationships: 100
+
+  queries:
+    min_count: 5
+    min_returning_results: 3
+    examples:
+      - "How many people are in the network?"
+      - "Who are the top 10 most followed people?"
+      - "What are the friends of a given person?"
+      - "Find friend recommendations for a user"
+      - "What are the most popular posts?"
+
+# Success gates (all must pass)
+success_gates:
+  - id: db_running
+    description: "Can connect to the Neo4j instance"
+    check: "driver.verify_connectivity() does not throw"
+
+  - id: model_valid
+    description: "Schema has ≥2 node labels and ≥1 relationship type"
+    check: "CALL db.schema.visualization() returns ≥2 node types"
+
+  - id: data_present
+    description: "Database contains data"
+    check: "MATCH (n) RETURN count(n) AS n — n >= 50"
+
+  - id: queries_work
+    description: "Generated queries return results"
+    check: "At least 3 of 5 queries return ≥1 row"
+
+  - id: app_generated
+    description: "Notebook file exists and is valid JSON"
+    check: "notebook.ipynb exists and python -m json.tool notebook.ipynb succeeds"
+
+  - id: time_budget
+    description: "Completed within time budget"
+    check: "total_seconds <= 900 (autonomous) or total_seconds <= 5400 (HITL)"
+
+# Test execution config
+test_config:
+  mode: autonomous
+  timeout_seconds: 900
+  allow_real_aura: false       # use docker or existing demo DB for CI
+  demo_db:
+    uri: "neo4j+s://demo.neo4jlabs.com:7687"
+    username: "neo4j"
+    password: "neo4j"
+    database: "neo4j"
+
+  # Inject this as the user's "response" in autonomous mode
+  user_inputs_inject:
+    - prompt: "What domain/industry?"
+      response: "Social network"
+    - prompt: "specific use-case"
+      response: "I want to build a friend recommendation system"
+    - prompt: "experience"
+      response: "Beginner, this is my first graph database"
+    - prompt: "database"
+      response: "Aura Free please"
+    - prompt: "data"
+      response: "Use synthetic data for now"
+    - prompt: "build"
+      response: "A Python notebook I can explore in Jupyter"

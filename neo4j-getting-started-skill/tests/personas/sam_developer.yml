@@ -1,0 +1,115 @@
+# Persona: Sam — The Pragmatic Developer
+# Target completion: ≤15 min autonomous, ≤90 min HITL
+
+persona:
+  id: sam_developer
+  name: Sam
+  description: "Mid-level developer migrating from relational to graph. Has real CSV data from an e-commerce project."
+  experience: intermediate
+  background: "5 years Python, comfortable with SQL, familiar with REST APIs, first graph project"
+
+inputs:
+  domain: ecommerce
+  use_case: "product recommendations and customer behavior analysis"
+  experience: intermediate
+  db_target: aura-pro
+  cloud_provider: aws
+  data_source: csv
+  csv_files:
+    - name: customers.csv
+      columns: [customer_id, name, email, joined_date, country, total_spent]
+    - name: products.csv
+      columns: [product_id, name, sku, price, category, stock_quantity]
+    - name: orders.csv
+      columns: [order_id, customer_id, ordered_at, total, status]
+    - name: order_items.csv
+      columns: [order_id, product_id, quantity, unit_price]
+  app_type: fastapi
+  language: python
+  framework: fastapi
+  integration: mcp
+
+# What the skill should produce
+expected_outputs:
+  files:
+    - .env
+    - schema.json
+    - schema.cypher
+    - queries.cypher
+    - main.py
+    - requirements.txt
+    - README.md
+    - .claude/settings.json   # MCP config for Claude Code
+
+  db_state:
+    min_node_labels: 3      # Customer, Product, Order minimum
+    min_rel_types: 2        # PLACED, CONTAINS minimum
+    min_nodes: 100
+    min_relationships: 200
+
+  queries:
+    min_count: 7
+    min_returning_results: 5
+    examples:
+      - "What are the top 10 best-selling products?"
+      - "Which customers have spent the most in total?"
+      - "What products are frequently bought together?"
+      - "Show the purchase history for a specific customer"
+      - "What products has a customer NOT bought that their peers have?"
+      - "Which product categories have the highest revenue?"
+      - "Find customers who haven't ordered in 90 days"
+
+  api_endpoints:
+    - "GET /products — list products with optional category filter"
+    - "GET /products/{sku}/recommendations — co-purchased product recommendations"
+    - "GET /customers/{id}/history — order history for a customer"
+    - "GET /customers/{id}/recommendations — product recommendations"
+    - "GET /analytics/top-products — top selling products"
+
+# Success gates (all must pass)
+success_gates:
+  - id: db_running
+    description: "Can connect to the Neo4j instance"
+    check: "driver.verify_connectivity() does not throw"
+
+  - id: model_valid
+    description: "Schema has ≥3 node labels and ≥2 relationship types"
+    check: "SHOW CONSTRAINTS returns ≥3 constraints"
+
+  - id: data_present
+    description: "CSV data imported successfully"
+    check: "MATCH (n) RETURN count(n) >= 100"
+
+  - id: queries_work
+    description: "Generated queries return results"
+    check: "At least 5 of 7 queries return ≥1 row"
+
+  - id: app_generated
+    description: "FastAPI app exists and passes syntax check"
+    check: "python -m py_compile main.py succeeds"
+
+  - id: mcp_configured
+    description: "MCP config written for Claude Code"
+    check: ".claude/settings.json or ~/.claude/settings.json contains neo4j mcpServer entry"
+
+  - id: time_budget
+    description: "Completed within time budget"
+    check: "total_seconds <= 900 (autonomous) or total_seconds <= 5400 (HITL)"
+
+# Test execution config
+test_config:
+  mode: autonomous
+  timeout_seconds: 1200
+  generate_synthetic_csv: true   # harness generates CSV files matching schema above
+
+  user_inputs_inject:
+    - prompt: "What domain"
+      response: "E-commerce — I'm building a product recommendation engine"
+    - prompt: "experience"
+      response: "Intermediate, I know Python and SQL well"
+    - prompt: "database"
+      response: "Aura Pro on AWS"
+    - prompt: "data"
+      response: "I have CSV files — customers, products, orders, and order line items"
+    - prompt: "build"
+      response: "A FastAPI backend and I also want to connect it to Claude via MCP"

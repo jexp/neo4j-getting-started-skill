@@ -47,9 +47,10 @@ print("✓ Connected")
 records, _, _ = driver.execute_query("""
     CYPHER 25
     MATCH (me:Person {id: $id})-[:FOLLOWS]->(f)-[:FOLLOWS]->(fof)
-    WHERE NOT (me)-[:FOLLOWS]->(fof) AND me <> fof
-    RETURN fof.name AS recommendation, count(f) AS mutual
+    WHERE NOT exists { (me)-[:FOLLOWS]->(fof) } AND me <> fof
+    WITH fof, count(DISTINCT f) AS mutual
     ORDER BY mutual DESC LIMIT 10
+    RETURN fof.name AS recommendation, mutual
 """, id="p1", database_="neo4j")
 df = pd.DataFrame([r.data() for r in records])
 assert len(df) > 0, "No recommendations returned — check data and query"
@@ -115,9 +116,10 @@ def run_query(q, params={}):
 df = run_query("""
     CYPHER 25
     MATCH (me:Person {id: $id})-[:FOLLOWS]->(f)-[:FOLLOWS]->(fof)
-    WHERE NOT (me)-[:FOLLOWS]->(fof) AND me <> fof
-    RETURN fof.name AS recommendation, count(f) AS mutual
+    WHERE NOT exists { (me)-[:FOLLOWS]->(fof) } AND me <> fof
+    WITH fof, count(DISTINCT f) AS mutual
     ORDER BY mutual DESC LIMIT 10
+    RETURN fof.name AS recommendation, mutual
 """, {"id": "1"})
 assert len(df) > 0, "No recommendations — check import and traversal query"
 df.plot(kind='barh', x='recommendation', y='mutual', title='Recommendations')

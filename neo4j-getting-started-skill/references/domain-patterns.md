@@ -37,9 +37,10 @@ CREATE INDEX post_created IF NOT EXISTS FOR (p:Post) ON (p.createdAt);
 // Friends of friends (recommendations)
 CYPHER 25
 MATCH (me:Person {id: $userId})-[:FOLLOWS]->(friend)-[:FOLLOWS]->(fof)
-WHERE NOT (me)-[:FOLLOWS]->(fof) AND me <> fof
-RETURN fof.name AS recommendation, count(*) AS mutualFriends
-ORDER BY mutualFriends DESC LIMIT 10;
+WHERE NOT exists { (me)-[:FOLLOWS]->(fof) } AND me <> fof
+WITH fof, count(DISTINCT friend) AS mutualFriends
+ORDER BY mutualFriends DESC LIMIT 10
+RETURN fof.name AS recommendation, mutualFriends;
 
 // Top influencers (by follower count)
 CYPHER 25

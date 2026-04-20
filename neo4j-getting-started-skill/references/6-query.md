@@ -58,9 +58,10 @@ LIMIT 25;
 // e.g. for recommendations: friends-of-friends not yet followed
 CYPHER 25
 MATCH (me:<Label> {id: $id})-[:<REL>]->(intermediate)-[:<REL>]->(target)
-WHERE NOT (me)-[:<REL>]->(target) AND me <> target
-RETURN target.name AS recommendation, count(intermediate) AS strength
-ORDER BY strength DESC LIMIT 10;
+WHERE NOT exists { (me)-[:<REL>]->(target) } AND me <> target
+WITH target, count(intermediate) AS strength
+ORDER BY strength DESC LIMIT 10
+RETURN target.name AS recommendation, strength;
 ```
 
 **Q4 — Aggregation (business metric)**

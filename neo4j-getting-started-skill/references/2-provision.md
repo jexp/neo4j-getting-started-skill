@@ -340,10 +340,16 @@ curl -s -X POST "http://localhost:7474/db/neo4j/query/v2" \
 
 ## On Completion — write to progress.md
 
+Write the provision script to `scripts/provision_aura.py` (not the project root).
+
 ```markdown
 ### 2-provision
 status: done
 NEO4J_URI=<value from .env>
+NEO4J_USERNAME=<value from .env>
+NEO4J_DATABASE=<value from .env, usually "neo4j">
+INSTANCE_ID=<Aura instance ID, e.g. "f1cad593" — needed for cleanup>
+files=scripts/provision_aura.py
 ```
 
 ## .env File Template

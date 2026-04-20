@@ -25,6 +25,31 @@ except ImportError:
     print("ERROR: neo4j package not installed. Run: pip install neo4j", file=sys.stderr)
     sys.exit(2)
 
+# ── Read sample_id from progress.md (written by 4-load) ─────────────────────
+def _read_sample_id() -> str:
+    progress = Path("progress.md")
+    if progress.exists():
+        m = re.search(r"^sample_id=(.+)$", progress.read_text(), re.MULTILINE)
+        if m:
+            val = m.group(1).strip().strip('"').strip("'")
+            if val:
+                return val
+    # Fallback: first row of primary node CSV
+    for csv_path in sorted(Path("data").glob("*.csv")) if Path("data").exists() else []:
+        try:
+            import csv as _csv
+            with open(csv_path) as f:
+                row = next(_csv.DictReader(f), None)
+                if row:
+                    for key in ("id", "ID", next(iter(row))):
+                        if key in row:
+                            return row[key]
+        except Exception:
+            pass
+    return "p1"
+
+SAMPLE_ID = _read_sample_id()
+
 # ── Locate queries file ───────────────────────────────────────────────────────
 candidates = [Path("queries/queries.cypher"), Path("queries.cypher")]
 queries_file = next((p for p in candidates if p.exists()), None)
@@ -67,8 +92,8 @@ except Exception as e:
 
 # ── Run each query ─────────────────────────────────────────────────────────────
 PARAM_DEFAULTS = {
-    r"\$id\b":          "'p1'",
-    r"\$\w*[Ii]d\b":    "'p1'",    # personId, userId, nodeId etc. — real IDs are "p1","p2"...
+    r"\$id\b":          f"'{SAMPLE_ID}'",
+    r"\$\w*[Ii]d\b":    f"'{SAMPLE_ID}'",  # personId, userId, nodeId etc.
     r"\$limit\b":       "10",
     r"\$threshold\b":   "0",
     r"\$searchTerm\b":  "'test'",

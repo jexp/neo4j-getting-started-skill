@@ -346,14 +346,30 @@ def run_skill(persona: dict, work_dir: Path, verbose: bool = False) -> tuple[str
                     f"\n[Runner] done — turns={turns}  elapsed={total_elapsed:.0f}s"
                     f"{cost_str}{tok_str}\n"
                 )
-                # Stage timing summary
+                # Stage timing summary — merge announced stages with known order
                 if stage_times:
+                    KNOWN = ["0-prerequisites","1-context","2-provision","3-model",
+                             "4-load","5-explore","6-query","7-build"]
+                    announced = {s for s, _ in stage_times}
+                    # insert skipped stages at 0s so timing rows are complete
+                    full = []
+                    for s, t in stage_times:
+                        full.append((s, t))
+                        # if next known stage was skipped, add it at same timestamp
+                        idx = KNOWN.index(s) if s in KNOWN else -1
+                        if idx >= 0:
+                            nxt = idx + 1
+                            while nxt < len(KNOWN) and KNOWN[nxt] not in announced:
+                                full.append((KNOWN[nxt], t))
+                                nxt += 1
                     sys.stdout.write("[Runner] Stage timings:\n")
-                    checkpoints = stage_times + [(current_stage, total_elapsed)]
+                    checkpoints = full + [(current_stage, total_elapsed)]
                     for i in range(len(checkpoints) - 1):
                         sname, t0 = checkpoints[i]
                         _, t1     = checkpoints[i + 1]
-                        sys.stdout.write(f"  {sname:<22} {t1 - t0:.0f}s\n")
+                        dt_s = t1 - t0
+                        skipped = "(skipped)" if dt_s == 0 else f"{dt_s:.0f}s"
+                        sys.stdout.write(f"  {sname:<22} {skipped}\n")
                 sys.stdout.flush()
                 break  # result is always the final stream-json event
 

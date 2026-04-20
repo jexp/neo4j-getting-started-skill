@@ -38,13 +38,12 @@ Tell the user: "Open the URL above, connect with your password from `.env`, then
 
 ## Option B — Notebook visualization (for APP_TYPE=notebook)
 
-Add a visualization cell using yfiles (recommended) or pyvis:
+Use **neo4j-viz** — the official Neo4j Python graph visualization library:
 
 ```python
-# Option B1: yfiles-jupyter-graphs-for-neo4j (best visual quality)
-# pip install yfiles-jupyter-graphs-for-neo4j
-from yfiles_jupyter_graphs_for_neo4j import Neo4jGraphWidget
-from neo4j import GraphDatabase
+# %pip install -q neo4j-viz
+from neo4j_viz.neo4j import from_neo4j
+from neo4j import GraphDatabase, RoutingControl
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -53,36 +52,13 @@ driver = GraphDatabase.driver(
     os.environ["NEO4J_URI"],
     auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"])
 )
-w = Neo4jGraphWidget(driver)
-w.show_cypher("CYPHER 25 MATCH (n)-[r]->(m) RETURN n,r,m LIMIT 50")
-w  # display in notebook
-```
-
-```python
-# Option B2: pyvis (lightweight, no extra neo4j dep)
-# pip install pyvis
-from pyvis.network import Network
-from neo4j import GraphDatabase
-import os
-from dotenv import load_dotenv
-load_dotenv()
-
-driver = GraphDatabase.driver(
-    os.environ["NEO4J_URI"],
-    auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"])
+result = driver.execute_query(
+    "CYPHER 25 MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 50",
+    routing_=RoutingControl.READ
 )
-records, _, _ = driver.execute_query(
-    "CYPHER 25 MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 50"
-)
-
-net = Network(height="600px", notebook=True)
-for record in records:
-    n, m = record["n"], record["m"]
-    net.add_node(n.element_id, label=list(n.labels)[0], title=str(dict(n)))
-    net.add_node(m.element_id, label=list(m.labels)[0], title=str(dict(m)))
-    net.add_edge(n.element_id, m.element_id, label=record["r"].type)
-
-net.show("graph.html")
+vg = from_neo4j(result)
+vg.color_nodes(field="caption")
+vg.render()
 ```
 
 ## Option C — VS Code Neo4j extension
@@ -121,7 +97,7 @@ RETURN d, c, e LIMIT 50;
 ### 5-explore
 status: done
 browser_url=<the generated https://browser.neo4j.io/... URL>
-viz_method=<browser|notebook-yfiles|notebook-pyvis|vscode>
+viz_method=<browser|notebook-neo4j-viz|vscode>
 ```
 
 ## Completion condition

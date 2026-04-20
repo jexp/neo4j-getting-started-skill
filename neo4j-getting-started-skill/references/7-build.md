@@ -67,7 +67,7 @@ Required cells (keep each cell focused — no multi-page cells):
 2. **Connection** — create driver, verify connectivity
 3. **Schema** — `CALL db.labels()` etc., display as DataFrame
 4. **Per-query cells** — one cell per query from `queries/queries.cypher`, display as DataFrame
-5. **Graph visualization** — yfiles or pyvis (see `${CLAUDE_SKILL_DIR}/references/5-explore.md`)
+5. **Graph visualization** — neo4j-viz (see `${CLAUDE_SKILL_DIR}/references/5-explore.md`)
 6. **Use-case answer cell** — use the query verified in Step A0; include assertion + plot
 
 ```python
@@ -115,7 +115,7 @@ Add to `requirements.txt`:
 jupyter>=1.0.0
 pandas>=2.0.0
 matplotlib>=3.0.0
-yfiles-jupyter-graphs-for-neo4j>=1.0.0
+neo4j-viz>=1.0.0
 ```
 
 ## Path B — Streamlit Dashboard

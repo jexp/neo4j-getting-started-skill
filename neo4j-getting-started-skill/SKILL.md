@@ -51,6 +51,9 @@ data/
 queries/
   queries.cypher        ← validated Cypher query library
 
+scripts/
+  provision_aura.py     ← Aura provisioning script (generated during provision stage)
+
 notebook.ipynb          ← app artifact (root — standard jupyter convention)
 app.py                  ← app artifact (root — streamlit run app.py)
 main.py                 ← app artifact (root — uvicorn main:app)
@@ -255,6 +258,18 @@ Detect mode: no user response within ~60s → switch to autonomous defaults.
 ---
 
 ## Final Summary (deliver after all gates pass)
+
+**Write a `README.md` to the working directory** — not just the summary table, but a human-readable document that tells the story of what was built. Structure it as:
+
+1. **Title + one-line description** — what graph was built and why
+2. **What's in the graph** — domain, node labels, relationship types, data counts from progress.md
+3. **How to explore** — the browser URL, the starter Cypher query
+4. **Files generated** — table of every file with a one-line description and re-run command
+5. **How to run the app** — the run command for the artifact (notebook/app/API)
+6. **How to reset and reload** — `schema/reset.cypher` → `data/generate.py` → `data/import.py`
+7. **Next steps** — GraphAcademy link, suggest extending the model
+
+Draw the content from `progress.md` (domain, use-case, counts, file lists) and the actual files generated. Write prose, not just key=value lines. Then print the summary to the conversation as well.
 
 ```
 ✓ Neo4j Getting-Started — Complete

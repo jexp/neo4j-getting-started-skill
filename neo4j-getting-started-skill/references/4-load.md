@@ -303,14 +303,25 @@ In autonomous mode: log counts and continue.
 
 ## On Completion — write to progress.md
 
-Record node counts per label and total relationships:
+Record node counts per label and total relationships. For `sample_id`, read the
+first two rows (header + data) of the primary node CSV to get a real loaded value:
+
+```python
+import csv
+with open("data/persons.csv") as f:       # replace with your primary node CSV
+    row = next(csv.DictReader(f))
+    print(row["id"])                       # use the primaryKey field from schema.json
+```
+
+Or query the DB: `MATCH (n:Person) RETURN n.id LIMIT 1`
+
 ```markdown
 ### 4-load
 status: done
 nodes=<e.g. "200 Person, 50 Post">
 relationships=<e.g. "1400 FOLLOWS, 300 POSTED">
 files=data/generate.py,data/import.py,schema/reset.cypher
-sample_id=<a real primary-key value loaded, e.g. "p1" — for query param defaults>
+sample_id=<actual value from first data row, e.g. "p1" or "42" or "abc-uuid">
 ```
 
 ## Error recovery

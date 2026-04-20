@@ -338,6 +338,22 @@ curl -s -X POST "http://localhost:7474/db/neo4j/query/v2" \
 
 ---
 
+## Parallelise with model design (saves ~60s)
+
+Aura provisioning typically takes 2–4 minutes. Don't wait idle — start stage 3-model
+immediately after launching the provision script, then connect once the DB is ready.
+
+```
+[launch provision_aura.py in background or with timeout poll]
+→ immediately proceed to stage 3-model (design schema, write schema.json + schema.cypher)
+→ when DB status = "running", apply schema.cypher and continue with stage 4-load
+```
+
+In practice: run the provision script, note the instance ID and polling URL, then
+read the `3-model.md` reference and design the graph. After the model is written,
+check DB status; if running, apply DDL immediately. If still provisioning, wait the
+remaining time.
+
 ## On Completion — write to progress.md
 
 Write the provision script to `scripts/provision_aura.py` (not the project root).

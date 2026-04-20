@@ -264,7 +264,7 @@ def run_skill(persona: dict, work_dir: Path, verbose: bool = False) -> tuple[str
     skill_md = (SKILL_SRC / "SKILL.md").read_text()
     prompt = build_initial_prompt(persona)
 
-    max_turns = persona.get("test_config", {}).get("max_turns", 55)
+    max_turns = persona.get("test_config", {}).get("max_turns", 60)
 
     cmd = [
         "claude",
@@ -350,7 +350,7 @@ def run_skill(persona: dict, work_dir: Path, verbose: bool = False) -> tuple[str
                 if stage_times:
                     KNOWN = ["0-prerequisites","1-context","2-provision","3-model",
                              "4-load","5-explore","6-query","7-build"]
-                    announced = {s for s, _ in stage_times}
+                    announced = {s for s, _ in stage_times} | {current_stage}
                     # insert skipped stages at 0s so timing rows are complete
                     full = []
                     for s, t in stage_times:

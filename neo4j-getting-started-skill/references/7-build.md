@@ -67,12 +67,27 @@ Required cells (keep each cell focused — no multi-page cells):
 2. **Connection** — create driver, verify connectivity
 3. **Schema** — `CALL db.labels()` etc., display as DataFrame
 4. **Per-query cells** — one cell per query from `queries/queries.cypher`, display as DataFrame
-5. **Graph visualization** — neo4j-viz (see `${CLAUDE_SKILL_DIR}/references/5-explore.md`)
+5. **Graph visualization — REQUIRED, do not skip** — interactive graph using `neo4j-viz`
 6. **Use-case answer cell** — use the query verified in Step A0; include assertion + plot
 
 ```python
 # Cell: Setup (run once if packages are missing)
-# %pip install -q neo4j python-dotenv pandas matplotlib
+# %pip install -q neo4j python-dotenv pandas matplotlib neo4j-viz
+```
+
+```python
+# Cell: Graph Visualization  ← REQUIRED — this is the "it clicks" moment for users
+from neo4j_viz.neo4j import from_neo4j
+from neo4j import RoutingControl
+
+result = driver.execute_query(
+    "CYPHER 25 MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 50",
+    routing_=RoutingControl.READ,
+    database_=os.environ.get("NEO4J_DATABASE", "neo4j")
+)
+vg = from_neo4j(result)
+vg.color_nodes(field="caption")
+vg.render()
 ```
 
 ```python

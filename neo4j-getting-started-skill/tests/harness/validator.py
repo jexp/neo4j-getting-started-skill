@@ -57,6 +57,28 @@ class Validator:
         self._driver = GraphDatabase.driver(uri, auth=(user, password))
         return self._driver
 
+    def _sample_id(self) -> str:
+        """Read sample_id from progress.md or first CSV row, fallback to 'p1'."""
+        progress = self.work_dir / "progress.md"
+        if progress.exists():
+            m = re.search(r"^sample_id=(.+)$", progress.read_text(), re.MULTILINE)
+            if m:
+                return m.group(1).strip().strip('"').strip("'")
+        data_dir = self.work_dir / "data"
+        if data_dir.exists():
+            for csv_path in sorted(data_dir.glob("*.csv")):
+                try:
+                    import csv as _csv
+                    with open(csv_path) as f:
+                        row = next(_csv.DictReader(f), None)
+                        if row:
+                            for key in ("id", "ID", next(iter(row))):
+                                if key in row:
+                                    return row[key]
+                except Exception:
+                    pass
+        return "p1"
+
     def check(self, gate_id: str) -> tuple[bool, str]:
         method = getattr(self, f"_gate_{gate_id}", None)
         if method is None:
@@ -155,9 +177,13 @@ class Validator:
         errors = []
         for i, query in enumerate(queries[:10]):  # test up to 10
             try:
-                # Replace $param placeholders with defaults for testing
-                test_query = re.sub(r'\$\w+', "'test'", query)
-                test_query = re.sub(r"'test'(?=\s+LIMIT|\s+\))", "20", test_query)
+                # Replace $param placeholders — use sample_id from progress.md
+                sample_id = self._sample_id()
+                test_query = re.sub(r'\$id\b', f"'{sample_id}'", query)
+                test_query = re.sub(r'\$\w*[Ii]d\b', f"'{sample_id}'", test_query)
+                test_query = re.sub(r'\$limit\b', "10", test_query)
+                test_query = re.sub(r'\$threshold\b', "0", test_query)
+                test_query = re.sub(r'\$\w+', "'test'", test_query)
                 records, _, _ = driver.execute_query(test_query)
                 if len(records) >= 1:
                     passing += 1

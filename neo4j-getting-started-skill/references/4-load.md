@@ -58,6 +58,15 @@ def load_batches(query: str, rows: list[dict]) -> int:
         total += summary.counters.nodes_created + summary.counters.relationships_created
     return total
 
+# ── Step 0: apply constraints before any data (idempotent) ────────────────────
+schema = open("schema/schema.cypher").read()
+with driver.session() as s:
+    for stmt in schema.split(";"):
+        stmt = stmt.strip()
+        if stmt and not stmt.startswith("//"):
+            s.run(stmt)
+print("✓ Constraints applied")
+
 # ── Read data — swap in any pandas-compatible source ──────────────────────────
 # CSV (local or HTTPS):   pd.read_csv("https://data.neo4j.com/northwind/products.csv")
 # Parquet / S3:           pd.read_parquet("s3://bucket/file.parquet")

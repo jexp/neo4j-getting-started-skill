@@ -364,12 +364,16 @@ def run_skill(persona: dict, work_dir: Path, verbose: bool = False) -> tuple[str
                                 nxt += 1
                     sys.stdout.write("[Runner] Stage timings:\n")
                     checkpoints = full + [(current_stage, total_elapsed)]
+                    # Each entry (prev_stage, T) means "T is when the next stage started".
+                    # The duration of stage checkpoints[i+1][0] is T[i+1] - T[i].
+                    # First interval is "init" (before stage 0 announcement).
                     for i in range(len(checkpoints) - 1):
-                        sname, t0 = checkpoints[i]
-                        _, t1     = checkpoints[i + 1]
-                        dt_s = t1 - t0
+                        label = checkpoints[i + 1][0]  # stage that ran during this period
+                        t0    = checkpoints[i][1]
+                        t1    = checkpoints[i + 1][1]
+                        dt_s  = t1 - t0
                         skipped = "(skipped)" if dt_s == 0 else f"{dt_s:.0f}s"
-                        sys.stdout.write(f"  {sname:<22} {skipped}\n")
+                        sys.stdout.write(f"  {label:<22} {skipped}\n")
                 sys.stdout.flush()
                 break  # result is always the final stream-json event
 

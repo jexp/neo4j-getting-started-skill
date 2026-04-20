@@ -26,6 +26,41 @@ Guide a **user or agent** from zero to a working Neo4j application by executing 
 
 ---
 
+## Project Structure
+
+**All generated code, data, scripts, queries, and notebooks must be written to the working directory** so the user can inspect, reuse, and re-run them after the session ends. Never generate output only as text in the conversation — always write it to a file.
+
+Organize files into this layout. Create subdirectories before writing files.
+
+```
+.env                    ← DB credentials (gitignored, loaded by python-dotenv)
+aura.env                ← Aura API credentials (gitignored, never overwrite)
+progress.md             ← stage-by-stage progress (this skill writes it)
+requirements.txt        ← Python dependencies
+
+schema/
+  schema.json           ← graph model definition
+  schema.cypher         ← DDL: constraints + indexes
+  reset.cypher          ← wipe all data (keep schema)
+
+data/
+  generate.py           ← synthetic data generator  (DATA_SOURCE=synthetic)
+  import.py             ← CSV/file importer          (DATA_SOURCE=csv or relational)
+  *.csv                 ← any provided or generated data files
+
+queries/
+  queries.cypher        ← validated Cypher query library
+
+notebook.ipynb          ← app artifact (root — standard jupyter convention)
+app.py                  ← app artifact (root — streamlit run app.py)
+main.py                 ← app artifact (root — uvicorn main:app)
+graphrag_app.py         ← app artifact (root)
+```
+
+Root-level files (`.env`, `requirements.txt`, app code) stay at root because tooling expects them there. Everything else goes in the appropriate subfolder.
+
+---
+
 ## Progress Tracking
 
 The skill maintains `progress.md` in the working directory to support resumability.
@@ -114,6 +149,7 @@ Shared capabilities used across multiple stages:
 - Cypher execution: `${CLAUDE_SKILL_DIR}/references/capabilities/execute-cypher.md` (3 options; `EXEC_METHOD` chosen in `context`)
 - Cypher authoring rules: `${CLAUDE_SKILL_DIR}/references/capabilities/cypher-authoring.md` (or defer to `neo4j-cypher-authoring-skill`)
 - MCP configuration: `${CLAUDE_SKILL_DIR}/references/capabilities/mcp-config.md` (used in `prerequisites` and `build`)
+- Query validation: `${CLAUDE_SKILL_DIR}/scripts/validate_queries.py` — batch-validate all queries in one call (used in `query`)
 
 ---
 
@@ -221,16 +257,27 @@ Detect mode: no user response within ~60s → switch to autonomous defaults.
 
 Database:  <NEO4J_URI>
 Browser:   https://browser.neo4j.io/?connectURL=<encoded>
-Queries:   queries.cypher
-App:       <file>  →  <run command>
-Reset:     cypher-shell ... --file reset.cypher
 
-Gates: db_running ✓  model_valid ✓  data_present ✓  queries_work ✓
-       graph_visible ✓  app_generated ✓  integration_ready ✓/–
+── What was generated (keep these files) ───────────────────────
+schema/schema.json       Graph model definition
+schema/schema.cypher     Re-apply constraints/indexes:  cypher-shell ... --file schema/schema.cypher
+schema/reset.cypher      Wipe data, keep schema:        cypher-shell ... --file schema/reset.cypher
+data/generate.py         Regenerate synthetic data:     python3 data/generate.py
+data/*.csv               Source data files — edit to change the dataset
+data/import.py           Re-import from CSVs:           python3 data/import.py
+queries/queries.cypher   Query library — paste into Neo4j Browser or run with cypher-shell
+<app-file>               <run-command>
+requirements.txt         Install deps:                  pip install -r requirements.txt
 
-Next:
-- Open the browser URL and run: MATCH (n)-[r]->(m) RETURN n,r,m LIMIT 50
-- GraphAcademy: https://graphacademy.neo4j.com  [personalized by EXPERIENCE + APP_TYPE]
-- Re-import:    python3 import/generate.py
-- Reset:        cypher-shell ... --file reset.cypher
+── Gates ───────────────────────────────────────────────────────
+db_running ✓  model_valid ✓  data_present ✓  queries_work ✓
+graph_visible ✓  app_generated ✓  integration_ready ✓/–
+
+── Next steps ──────────────────────────────────────────────────
+- Explore:   open the Browser URL → run MATCH (n)-[r]->(m) RETURN n,r,m LIMIT 50
+- Iterate:   edit data/*.csv → python3 data/import.py (reset first with schema/reset.cypher)
+- Learn:     https://graphacademy.neo4j.com
 ```
+
+Omit lines that don't apply (e.g. omit `data/import.py` when `DATA_SOURCE=synthetic`,
+omit `data/generate.py` when `DATA_SOURCE=csv`).

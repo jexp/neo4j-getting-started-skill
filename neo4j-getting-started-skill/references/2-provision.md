@@ -99,18 +99,35 @@ else:
     print(f"  Using PROJECT_ID={PROJECT_ID} from aura.env")
 
 # ── Create instance (v1beta5) ─────────────────────────────────────────────────
-result = api("POST", "/v1beta5/instances", token, body={
-    "name": "myapp-db",
-    "tenant_id": PROJECT_ID,
-    "cloud_provider": "gcp",
-    "region": "europe-west1",
-    "type": "free-db",
-    "memory": "1GB",
-})["data"]
-
-INSTANCE_ID = result["id"]
-PASSWORD     = result["password"]   # shown only once — captured here
-print(f"✓ Instance created: {INSTANCE_ID}")
+# If free quota is exceeded this raises RuntimeError — handled below.
+try:
+    result = api("POST", "/v1beta5/instances", token, body={
+        "name": "myapp-db",
+        "tenant_id": PROJECT_ID,
+        "cloud_provider": "gcp",
+        "region": "europe-west1",
+        "type": "free-db",
+        "memory": "1GB",
+    })["data"]
+    INSTANCE_ID = result["id"]
+    PASSWORD     = result["password"]   # shown only once — captured here
+    print(f"✓ Instance created: {INSTANCE_ID}")
+except RuntimeError as e:
+    if "quota" not in str(e).lower() and "limit" not in str(e).lower():
+        raise
+    # Free quota exceeded — fall back to a Pro trial instance (also free for new accounts)
+    print(f"  Free quota exceeded. Falling back to professional-db trial instance...")
+    result = api("POST", "/v1beta5/instances", token, body={
+        "name": "myapp-db",
+        "tenant_id": PROJECT_ID,
+        "cloud_provider": "gcp",
+        "region": "europe-west1",
+        "type": "professional-db",
+        "memory": "1GB",
+    })["data"]
+    INSTANCE_ID = result["id"]
+    PASSWORD     = result["password"]
+    print(f"✓ Pro trial instance created: {INSTANCE_ID}")
 
 # ── Poll until running ────────────────────────────────────────────────────────
 CONNECTION = ""

@@ -5,7 +5,7 @@
 
 ```bash
 source .env
-cypher-shell -a "$NEO4J_URI" -u "$NEO4J_USERNAME" -p "$NEO4J_PASSWORD" --file schema.cypher
+cypher-shell -a "$NEO4J_URI" -u "$NEO4J_USERNAME" -p "$NEO4J_PASSWORD" --file schema/schema.cypher
 ```
 
 Or via Python if cypher-shell unavailable:
@@ -14,7 +14,7 @@ from neo4j import GraphDatabase; import os
 driver = GraphDatabase.driver(os.environ["NEO4J_URI"],
                                auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"]))
 with driver.session() as s:
-    for stmt in open("schema.cypher").read().split(";"):
+    for stmt in open("schema/schema.cypher").read().split(";"):
         stmt = stmt.strip()
         if stmt and not stmt.startswith("//"):
             s.run(stmt)
@@ -28,7 +28,7 @@ print("Schema applied")
 - **MERGE relationships second** — only after all endpoint node types are loaded
 - **Batch size**: 500 rows per call — pass as `$rows` parameter list from Python
 - **Use MERGE not CREATE** — idempotent, safe to re-run
-- **All scripts go in `import/`** — user can re-run them for updates
+- **All scripts go in `data/`** — user can re-run them for updates
 
 ## Preferred pattern — Python batch loading via DataFrame
 
@@ -97,7 +97,7 @@ print(f"PART_OF rels: {n}")
 driver.close()
 ```
 
-Run: `python3 import/import.py`
+Run: `python3 data/import.py`
 
 ### Type coercion in Cypher vs Python
 
@@ -123,31 +123,95 @@ For other demos, fetch the import URL from https://github.com/neo4j-graph-exampl
 
 ## Path B — Synthetic data
 
-Generate `import/generate.py` — nodes first, then relationships:
+**Two-step approach: generate CSVs first, then import via DataFrame.**
+This is faster to write, easier to inspect, and reuses the same batch loading pattern as Path C.
+
+### Step B1 — Generate CSVs (`data/generate.py`)
+
+Generate one CSV per entity type using Python's `csv` module — no DB connection needed:
 
 ```python
+import csv, os, random
+from datetime import datetime, timedelta
+
+os.makedirs("data", exist_ok=True)
+random.seed(42)
+
+CITIES = ["London", "New York", "Berlin", "Tokyo", "Sydney"]
+
+# ── Nodes ─────────────────────────────────────────────────────────────────────
+with open("data/persons.csv", "w", newline="") as f:
+    w = csv.DictWriter(f, ["id", "name", "age", "city", "joined_at"])
+    w.writeheader()
+    for i in range(1, 201):
+        w.writerow({
+            "id": f"p{i}",
+            "name": f"Person {i}",
+            "age": random.randint(18, 65),
+            "city": random.choice(CITIES),
+            "joined_at": (datetime.now() - timedelta(days=random.randint(0, 730))).strftime("%Y-%m-%d"),
+        })
+
+# (add more node CSVs for other labels in schema.json)
+
+# ── Relationships ─────────────────────────────────────────────────────────────
+ids = [f"p{i}" for i in range(1, 201)]
+with open("data/follows.csv", "w", newline="") as f:
+    w = csv.DictWriter(f, ["from_id", "to_id"])
+    w.writeheader()
+    for src in ids:
+        for tgt in random.sample(ids, k=random.randint(3, 15)):
+            if src != tgt:
+                w.writerow({"from_id": src, "to_id": tgt})
+
+print("✓ CSVs written:", [f for f in os.listdir("data") if f.endswith(".csv")])
+```
+
+Run: `python3 data/generate.py`
+
+### Step B2 — Import CSVs (`data/import.py`)
+
+Use the standard batch loading pattern — same as Path C:
+
+```python
+import os, pandas as pd
 from neo4j import GraphDatabase
-import os, random
+from dotenv import load_dotenv
 
-driver = GraphDatabase.driver(os.environ["NEO4J_URI"],
-                               auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"]))
+load_dotenv()
+driver = GraphDatabase.driver(
+    os.environ["NEO4J_URI"],
+    auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"])
+)
 
-with driver.session() as s:
-    # Step 1: MERGE all nodes first
-    s.run("""CYPHER 25
-        UNWIND range(1, 200) AS i
-        MERGE (p:Person {id: toString(i)})
-        SET p.name = 'Person ' + toString(i),
-            p.email = 'person' + toString(i) + '@example.com',
-            p.createdAt = datetime() - duration({days: toInteger(rand() * 365)})
-    """)
+BATCH = 500
 
-    # Step 2: MERGE relationships second (after all nodes exist)
-    s.run("""CYPHER 25
-        MATCH (a:Person), (b:Person)
-        WHERE a.id < b.id AND rand() < 0.05
-        MERGE (a)-[:FOLLOWS]->(b)
-    """)
+def load_batches(query, rows):
+    total = 0
+    for i in range(0, len(rows), BATCH):
+        _, summary, _ = driver.execute_query(query, rows=rows[i:i+BATCH])
+        total += summary.counters.nodes_created + summary.counters.relationships_created
+    return total
+
+# ── Phase 1: nodes ─────────────────────────────────────────────────────────────
+persons = pd.read_csv("data/persons.csv")
+n = load_batches("""
+    UNWIND $rows AS row
+    MERGE (p:Person {id: row.id})
+    SET p.name = row.name, p.age = toInteger(row.age),
+        p.city = row.city, p.joinedAt = date(row.joined_at)
+""", persons.to_dict("records"))
+print(f"  Person nodes: {n}")
+
+# ── Phase 2: relationships ──────────────────────────────────────────────────────
+follows = pd.read_csv("data/follows.csv")
+n = load_batches("""
+    UNWIND $rows AS row
+    MATCH (a:Person {id: row.from_id})
+    MATCH (b:Person {id: row.to_id})
+    MERGE (a)-[:FOLLOWS]->(b)
+""", follows.to_dict("records"))
+print(f"  FOLLOWS rels: {n}")
 
 records, _, _ = driver.execute_query("MATCH (n) RETURN labels(n)[0] AS l, count(n) AS c")
 for r in records:
@@ -155,7 +219,7 @@ for r in records:
 driver.close()
 ```
 
-Run: `python3 import/generate.py`
+Run: `python3 data/import.py`
 
 ## Path C — CSV / tabular data (any source)
 
@@ -208,15 +272,15 @@ CREATE FULLTEXT INDEX <label>_name IF NOT EXISTS
   FOR (n:<Label>) ON EACH [n.name];
 ```
 
-## Step L6 — Write reset.cypher (always)
+## Step L6 — Write schema/reset.cypher (always)
 
 ```bash
-cat > reset.cypher << 'EOF'
+cat > schema/reset.cypher << 'EOF'
 // Delete all data — keeps schema (constraints + indexes)
 CYPHER 25
 MATCH (n) CALL (n) { DETACH DELETE n } IN TRANSACTIONS OF 1000 ROWS;
 EOF
-echo "Reset script: cypher-shell ... --file reset.cypher"
+echo "Reset script: cypher-shell ... --file schema/reset.cypher"
 ```
 
 ## Step L7 — HITL data preview pause
@@ -234,8 +298,8 @@ In autonomous mode: log counts and continue.
 
 - `MATCH (n) RETURN count(n)` ≥ 50
 - Each node label has ≥1 node
-- `import/` directory contains the script(s) used
-- `reset.cypher` exists
+- `data/` directory contains the import script(s) used
+- `schema/reset.cypher` exists
 
 ## On Completion — write to progress.md
 

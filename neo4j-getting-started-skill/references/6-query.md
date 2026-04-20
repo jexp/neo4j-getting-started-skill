@@ -121,22 +121,35 @@ RETURN node.name AS name, node.<prop> AS description, score
 ORDER BY score DESC LIMIT 20;
 ```
 
-## Step Q4 — Validate each query
+## Step Q4 — Validate all queries in one batch call
 
-For each query, substitute `$param` with a literal default and execute:
+**Do not run cypher-shell once per query** — each remote call adds latency.
+Instead, run all queries in a single Python script using the Query API helper:
 
-```bash
-# Via neo4j-mcp read-cypher tool (preferred)
-# OR:
-source .env
-cypher-shell -a "$NEO4J_URI" -u "$NEO4J_USERNAME" -p "$NEO4J_PASSWORD" \
-  "CYPHER 25 MATCH (n:<Label> {id: '1'})-[r]->(m) RETURN type(r), m.name LIMIT 10"
+```python
+# Run from the work directory:
+#   python3 -c "$(cat ${CLAUDE_SKILL_DIR}/scripts/validate_queries.py)"
+# Or copy the script and run it directly.
 ```
 
-Only include a query in `queries.cypher` if it executes without error.
-A query that returns 0 rows is acceptable if the schema confirms the pattern exists.
+The skill ships a validation helper at `${CLAUDE_SKILL_DIR}/scripts/validate_queries.py`.
+Run it after drafting `queries/queries.cypher`:
 
-## Step Q5 — Write queries.cypher
+```bash
+python3 "${CLAUDE_SKILL_DIR}/scripts/validate_queries.py"
+```
+
+It reads `queries/queries.cypher`, substitutes `$param` placeholders with safe defaults,
+runs all queries in a single driver session, and prints a pass/fail table.
+Only queries marked ✓ need to be in the final file; remove or fix any marked ✗.
+
+A query returning 0 rows is acceptable if the schema confirms the pattern exists.
+
+## Step Q5 — Write queries/queries.cypher
+
+```bash
+mkdir -p queries
+```
 
 ```cypher
 // ============================================================
@@ -174,6 +187,6 @@ queries_returning_rows=<number>
 
 ## Completion condition
 
-- `queries.cypher` has ≥5 queries
+- `queries/queries.cypher` has ≥5 queries
 - ≥2 are traversal queries (contain `->` or `<-` relationship pattern in MATCH)
 - ≥3 execute and return ≥1 row on the imported data

@@ -103,8 +103,10 @@ test-quick:
 	@test -f tests/personas/sam_developer.yml && echo "  ✓ sam_developer.yml" || echo "  ✗ sam_developer.yml MISSING"
 	@test -f tests/harness/runner.py && echo "  ✓ runner.py" || echo "  ✗ runner.py MISSING"
 	@test -f tests/harness/validator.py && echo "  ✓ validator.py" || echo "  ✗ validator.py MISSING"
+	@test -f scripts/validate_queries.py && echo "  ✓ scripts/validate_queries.py" || echo "  ✗ scripts/validate_queries.py MISSING"
 	@python3 -m py_compile tests/harness/runner.py && echo "  ✓ runner.py syntax OK" || echo "  ✗ runner.py syntax ERRORS"
 	@python3 -m py_compile tests/harness/validator.py && echo "  ✓ validator.py syntax OK" || echo "  ✗ validator.py syntax ERRORS"
+	@python3 -m py_compile scripts/validate_queries.py && echo "  ✓ validate_queries.py syntax OK" || echo "  ✗ validate_queries.py syntax ERRORS"
 	@echo "Done."
 
 # ─── Manual testing ───────────────────────────────────────────────────────────

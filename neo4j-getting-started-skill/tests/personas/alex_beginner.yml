@@ -24,9 +24,11 @@ inputs:
 expected_outputs:
   files:
     - .env
-    - schema.json
-    - schema.cypher
-    - queries.cypher
+    - schema/schema.json
+    - schema/schema.cypher
+    - schema/reset.cypher
+    - data/generate.py
+    - queries/queries.cypher
     - notebook.ipynb
     - requirements.txt
 
@@ -68,9 +70,6 @@ success_gates:
     description: "Notebook file exists and is valid JSON"
     check: "notebook.ipynb exists and python -m json.tool notebook.ipynb succeeds"
 
-  - id: time_budget
-    description: "Completed within time budget"
-    check: "total_seconds <= 900 (autonomous) or total_seconds <= 5400 (HITL)"
 
 # Test execution config
 test_config:

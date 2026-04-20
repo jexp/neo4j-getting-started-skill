@@ -124,14 +124,27 @@ class Validator:
         min_queries = self.query_config.get("min_count", 5)
         min_returning = self.query_config.get("min_returning_results", 3)
 
-        queries_file = self.work_dir / "queries.cypher"
+        queries_file = self.work_dir / "queries" / "queries.cypher"
         if not queries_file.exists():
-            return False, "queries.cypher not found"
+            # fallback: root-level queries.cypher from older runs
+            queries_file = self.work_dir / "queries.cypher"
+        if not queries_file.exists():
+            return False, "queries/queries.cypher not found"
 
         cypher_text = queries_file.read_text()
-        # Split on comment lines starting with //
-        raw_queries = re.split(r'\n//[^\n]*\n', cypher_text)
-        queries = [q.strip() for q in raw_queries if q.strip() and not q.strip().startswith("//")]
+        # Split on semicolons — each statement is one query
+        # Strip comment-only segments and blank segments
+        raw_segments = cypher_text.split(";")
+        queries = []
+        for seg in raw_segments:
+            # Remove comment lines and blank lines, keep non-comment content
+            content_lines = [
+                ln for ln in seg.splitlines()
+                if ln.strip() and not ln.strip().startswith("//")
+            ]
+            content = "\n".join(content_lines).strip()
+            if content:
+                queries.append(seg.strip())  # keep original for execution
 
         if len(queries) < min_queries:
             return False, f"Only {len(queries)} queries found (need ≥{min_queries})"
@@ -165,13 +178,13 @@ class Validator:
         app_type = self.persona["inputs"]["app_type"]
         language = self.persona["inputs"].get("language", "python")
 
-        # Expected files by app type
+        # Expected files by app type — check both root and app/ subfolder
         candidates = {
             "notebook": ["notebook.ipynb"],
             "streamlit": ["app.py"],
             "fastapi": ["main.py"],
             "express": ["server.js"],
-            "queries-only": ["queries.cypher", "README.md"],
+            "queries-only": ["queries/queries.cypher", "queries.cypher", "README.md"],
             "mcp": [".claude/settings.json", "mcp_config.json"],
         }
 

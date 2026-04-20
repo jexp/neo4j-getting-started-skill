@@ -77,7 +77,11 @@ Does this look right? Anything to add, rename, or remove?
 
 In autonomous mode: auto-approve and continue.
 
-## Step M4 — Write schema.json
+## Step M4 — Write schema/schema.json
+
+```bash
+mkdir -p schema
+```
 
 ```json
 {
@@ -90,7 +94,11 @@ In autonomous mode: auto-approve and continue.
 }
 ```
 
-## Step M5 — Write schema.cypher (DDL)
+Write to `schema/schema.json`.
+
+## Step M5 — Write schema/schema.cypher (DDL)
+
+Write to `schema/schema.cypher`.
 
 **Constraints before indexes. Constraints before data.**
 
@@ -123,6 +131,6 @@ constraints=<number applied>
 
 ## Completion condition
 
-- `schema.json` written with at least 2 nodes and 1 relationship
-- `schema.cypher` written with at least 1 uniqueness constraint
+- `schema/schema.json` written with at least 2 nodes and 1 relationship
+- `schema/schema.cypher` written with at least 1 uniqueness constraint
 - HITL: user approved (or auto-approved)

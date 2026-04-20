@@ -22,14 +22,53 @@ APP_TYPE=mcp           → Path E: neo4j-mcp configuration
 
 ## Path A — Jupyter Notebook
 
-Generate `notebook.ipynb`. Required cells:
+**Two-step approach: test Python snippets first, then compose into notebook.**
+This avoids writing a large notebook only to discover connection or query errors.
+
+### Step A0 — Smoke-test key snippets in isolation
+
+Before writing the notebook, verify the critical pieces work:
+
+```python
+# Test: connection + use-case query (run with python3, not jupyter)
+from neo4j import GraphDatabase
+from dotenv import load_dotenv
+import os, pandas as pd
+
+load_dotenv()
+driver = GraphDatabase.driver(
+    os.environ["NEO4J_URI"],
+    auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"])
+)
+driver.verify_connectivity()
+print("✓ Connected")
+
+# Test the core use-case query (adapt to domain)
+records, _, _ = driver.execute_query("""
+    CYPHER 25
+    MATCH (me:Person {id: $id})-[:FOLLOWS]->(f)-[:FOLLOWS]->(fof)
+    WHERE NOT (me)-[:FOLLOWS]->(fof) AND me <> fof
+    RETURN fof.name AS recommendation, count(f) AS mutual
+    ORDER BY mutual DESC LIMIT 10
+""", id="p1", database_="neo4j")
+df = pd.DataFrame([r.data() for r in records])
+assert len(df) > 0, "No recommendations returned — check data and query"
+print(f"✓ Use-case query works: {len(df)} recommendations")
+driver.close()
+```
+
+Run: `python3 -c "..."` or write to a temp file and run it. **Only proceed to notebook composition once this passes.**
+
+### Step A1 — Compose `notebook.ipynb`
+
+Required cells (keep each cell focused — no multi-page cells):
 
 1. **Setup** — imports + `.env` loading via `python-dotenv`
 2. **Connection** — create driver, verify connectivity
 3. **Schema** — `CALL db.labels()` etc., display as DataFrame
-4. **Per-query cells** — one cell per query from `queries.cypher`, display as DataFrame
+4. **Per-query cells** — one cell per query from `queries/queries.cypher`, display as DataFrame
 5. **Graph visualization** — yfiles or pyvis (see `${CLAUDE_SKILL_DIR}/references/5-explore.md`)
-6. **Use-case answer cell** — must return non-empty results + include assertion
+6. **Use-case answer cell** — use the query verified in Step A0; include assertion + plot
 
 ```python
 # Cell: Connection

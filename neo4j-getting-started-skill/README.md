@@ -49,19 +49,29 @@ The skill writes `progress.md` after each stage. If a session is interrupted, th
 ## Files produced
 
 ```
-.env                    ← DB connection credentials
-schema.json             ← graph model definition
-schema.cypher           ← DDL (constraints + indexes)
-import/                 ← data loading scripts
-reset.cypher            ← wipe data, keep schema
-queries.cypher          ← validated Cypher query library
+.env                    ← DB connection credentials (gitignored)
+aura.env                ← Aura API credentials (gitignored)
+progress.md             ← stage-by-stage progress log
+requirements.txt
+
+schema/
+  schema.json           ← graph model definition
+  schema.cypher         ← DDL (constraints + indexes)
+  reset.cypher          ← wipe data, keep schema
+
+data/
+  generate.py           ← synthetic data generator
+  import.py             ← CSV/file importer
+  *.csv                 ← data files
+
+queries/
+  queries.cypher        ← validated Cypher query library
+
 notebook.ipynb          ← (if APP_TYPE=notebook)
 app.py                  ← (if APP_TYPE=streamlit)
 main.py                 ← (if APP_TYPE=fastapi)
 graphrag_app.py         ← (if APP_TYPE=graphrag)
 .claude/settings.json   ← (if APP_TYPE=mcp or integration=mcp)
-requirements.txt
-progress.md             ← stage-by-stage progress log
 ```
 
 ## Modes

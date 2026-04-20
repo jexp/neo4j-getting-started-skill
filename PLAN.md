@@ -113,7 +113,7 @@
 | 670 | 5 | `pending` | Docker CI mode for harness | --db-mode=docker fast path; Aura mode for full-path tests |
 | 680 | 5 | `pending` | Sub-skills: cypher-authoring, data-modeling, app-dev | Separate skill folders; skill can delegate to them; reusable outside this skill |
 | 690 | 4 | `pending` | 2nd free DB for integration testing | Phase 2: keep main DB clean; run harness against separate instance |
-| 700 | 6 | `pending` | Parallel provisioning — overlap model design with DB spin-up | After calling provision script, start stage 3-model while polling for DB readiness; apply schema + load once up — could recover ~60s of the ~260s provision wait |
+| 700 | 6 | `pending` | Parallel provisioning — all offline work during DB spin-up | After launching provision script: do stages 3 (model design), 4 (generate.py + CSVs + import.py), 6 (write queries.cypher) before DB is ready — only schema apply, import run, query validation, and browser URL need a live DB; could save 2–3 min of the ~4 min Aura wait |
 | 710 | 5 | `pending` | Graph Type Schema support (preview) | Use `CREATE TYPE` / `RELATIONSHIP TYPE` DDL when DB supports it (≥Neo4j 5.x preview); detect support before generating schema.cypher; see https://neo4j.com/blog/developer/graph-type-schema-enforcement-made-easy-preview/ |
 
 ## Phase 7 — Integration & Ship

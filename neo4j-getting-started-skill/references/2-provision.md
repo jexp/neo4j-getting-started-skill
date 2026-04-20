@@ -338,21 +338,42 @@ curl -s -X POST "http://localhost:7474/db/neo4j/query/v2" \
 
 ---
 
-## Parallelise with model design (saves ~60s)
+## Parallelise with offline work (saves 2–3 min)
 
-Aura provisioning typically takes 2–4 minutes. Don't wait idle — start stage 3-model
-immediately after launching the provision script, then connect once the DB is ready.
+Aura provisioning typically takes 2–4 minutes. Everything that doesn't touch the
+database can be done during that wait. Only execution needs the DB to be ready.
+
+**What can be done before the DB is running (no connection needed):**
+- Stage 3: design the model, write `schema/schema.json` + `schema/schema.cypher`
+- Stage 4: write `data/generate.py`, run it (pure Python → CSVs), write `data/import.py`
+- Stage 6: write `queries/queries.cypher` (text only — validation runs later)
+
+**What must wait for the DB:**
+- Apply `schema/schema.cypher` (constraints + indexes)
+- Run `data/import.py` (loads CSVs into Neo4j)
+- Run `validate_queries.py` (executes queries against live DB)
+- Stage 5: generate browser URL (needs `NEO4J_URI` from `.env`)
+
+**Recommended flow after launching provision_aura.py:**
 
 ```
-[launch provision_aura.py in background or with timeout poll]
-→ immediately proceed to stage 3-model (design schema, write schema.json + schema.cypher)
-→ when DB status = "running", apply schema.cypher and continue with stage 4-load
+1. Launch scripts/provision_aura.py — note the polling URL from its output
+2. Immediately: read 3-model.md, design graph, write schema.json + schema.cypher
+3. Immediately: read 4-load.md, write data/generate.py, run it (generates CSVs), write data/import.py
+4. Immediately: read 6-query.md, write queries/queries.cypher
+5. Poll DB status — check every 15s:
+     python3 -c "
+     import json, urllib.request, os
+     from dotenv import dotenv_values
+     env = dotenv_values('aura.env')
+     # ... poll instance status endpoint
+     "
+6. DB running → apply schema.cypher → run import.py → validate_queries.py
+7. Continue with stages 5, 7 (explore, build)
 ```
 
-In practice: run the provision script, note the instance ID and polling URL, then
-read the `3-model.md` reference and design the graph. After the model is written,
-check DB status; if running, apply DDL immediately. If still provisioning, wait the
-remaining time.
+If any offline-written files need fixing after DB validation, the fix loop is short
+because the structure is already correct — only execution errors need addressing.
 
 ## On Completion — write to progress.md
 

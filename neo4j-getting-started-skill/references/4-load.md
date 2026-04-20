@@ -309,6 +309,8 @@ Record node counts per label and total relationships:
 status: done
 nodes=<e.g. "200 Person, 50 Post">
 relationships=<e.g. "1400 FOLLOWS, 300 POSTED">
+files=data/generate.py,data/import.py,schema/reset.cypher
+sample_id=<a real primary-key value loaded, e.g. "p1" — for query param defaults>
 ```
 
 ## Error recovery

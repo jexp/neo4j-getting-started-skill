@@ -68,7 +68,7 @@ except Exception as e:
 # ── Run each query ─────────────────────────────────────────────────────────────
 PARAM_DEFAULTS = {
     r"\$id\b":          "'p1'",
-    r"\$\w*[Ii]d\b":    "'1'",
+    r"\$\w*[Ii]d\b":    "'p1'",    # personId, userId, nodeId etc. — real IDs are "p1","p2"...
     r"\$limit\b":       "10",
     r"\$threshold\b":   "0",
     r"\$searchTerm\b":  "'test'",

@@ -66,6 +66,10 @@ success_gates:
     description: "Generated queries return results"
     check: "At least 3 of 5 queries return ≥1 row"
 
+  - id: graph_visible
+    description: "Browser URL was delivered to the user"
+    check: "progress.md contains browser_url= in 5-explore section"
+
   - id: app_generated
     description: "Notebook file exists and is valid JSON"
     check: "notebook.ipynb exists and python -m json.tool notebook.ipynb succeeds"

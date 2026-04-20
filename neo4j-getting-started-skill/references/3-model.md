@@ -127,6 +127,8 @@ status: done
 labels=<comma-separated node labels>
 relationships=<comma-separated relationship types>
 constraints=<number applied>
+files=schema/schema.json,schema/schema.cypher
+sample_id=<a real primary-key value from the data, e.g. "p1" — used for query params>
 ```
 
 ## Completion condition

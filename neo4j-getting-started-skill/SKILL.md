@@ -72,7 +72,11 @@ The skill maintains `progress.md` in the working directory to support resumabili
    grep -B1 "^status: pending" progress.md | grep "^###" | head -1
    ```
 3. Resume from that stage. Read its context block (the key=value lines beneath the header) to restore `DOMAIN`, `USE_CASE`, `NEO4J_URI`, etc. — do not re-ask the user for information already recorded.
-4. If `progress.md` does not exist, start from `0-prerequisites`.
+4. For each completed stage, read every file listed in its `files=` line before proceeding. These files are the ground truth — do not reconstruct their content from memory.
+   - `schema/schema.json` → re-read before model, load, query, or build stages
+   - `queries/queries.cypher` → re-read before build stage
+   - `data/generate.py` → re-read before import or reset
+5. If `progress.md` does not exist, start from `0-prerequisites`.
 
 **On stage completion** — update (or create) `progress.md`:
 - If the stage's `###` section already exists, update `status: pending` → `status: done` and append any new key=value lines.

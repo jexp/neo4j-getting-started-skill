@@ -172,7 +172,21 @@ class Validator:
 
         return True, f"{passing}/{len(queries)} queries return results"
 
-    # ── Gate 5: App generated ──────────────────────────────────────────────────
+    # ── Gate 5: Graph visible ─────────────────────────────────────────────────
+
+    def _gate_graph_visible(self) -> tuple[bool, str]:
+        progress = self.work_dir / "progress.md"
+        if progress.exists():
+            text = progress.read_text()
+            # Look for browser_url= in the 5-explore section
+            import re
+            m = re.search(r"### 5-explore.*?browser_url=(\S+)", text, re.DOTALL)
+            if m:
+                return True, f"Browser URL recorded: {m.group(1)[:60]}"
+        # Fallback: scan stdout for browser URL pattern
+        return False, "No browser_url found in progress.md (5-explore section)"
+
+    # ── Gate 6: App generated ──────────────────────────────────────────────────
 
     def _gate_app_generated(self) -> tuple[bool, str]:
         app_type = self.persona["inputs"]["app_type"]

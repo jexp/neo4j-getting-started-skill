@@ -264,7 +264,7 @@ def run_skill(persona: dict, work_dir: Path, verbose: bool = False) -> tuple[str
     skill_md = (SKILL_SRC / "SKILL.md").read_text()
     prompt = build_initial_prompt(persona)
 
-    max_turns = persona.get("test_config", {}).get("max_turns", 45)
+    max_turns = persona.get("test_config", {}).get("max_turns", 55)
 
     cmd = [
         "claude",

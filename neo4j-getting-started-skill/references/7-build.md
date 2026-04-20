@@ -71,6 +71,11 @@ Required cells (keep each cell focused — no multi-page cells):
 6. **Use-case answer cell** — use the query verified in Step A0; include assertion + plot
 
 ```python
+# Cell: Setup (run once if packages are missing)
+# %pip install -q neo4j python-dotenv pandas matplotlib
+```
+
+```python
 # Cell: Connection
 from neo4j import GraphDatabase
 from dotenv import load_dotenv
@@ -311,6 +316,7 @@ status: done
 artifact=<filename, e.g. notebook.ipynb or app.py>
 app_type=<notebook|streamlit|fastapi|graphrag|mcp>
 run_command=<e.g. "jupyter notebook notebook.ipynb" or "streamlit run app.py">
+files=<artifact filename>,requirements.txt
 ```
 
 ## Completion condition

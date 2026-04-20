@@ -183,6 +183,7 @@ status: done
 queries_total=<number>
 traversal_queries=<number>
 queries_returning_rows=<number>
+files=queries/queries.cypher
 ```
 
 ## Completion condition

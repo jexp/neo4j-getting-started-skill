@@ -104,49 +104,91 @@ ORDER BY revenue DESC LIMIT 20;
 **Use-cases**: Fraud ring detection, money laundering, transaction pattern analysis, KYC
 
 ### Model
-```
-(Account {id, owner, type, balance, createdAt, status})
-(Transaction {id, amount, currency, timestamp, type, status})
-(Person {id, name, email, phone, ssn})
-(Device {id, fingerprint, ip, userAgent})
-(Merchant {id, name, category, country})
 
-(Account)-[:OWNS]->(Person)
-(Transaction)-[:FROM]->(Account)
-(Transaction)-[:TO]->(Account)
-(Transaction)-[:AT]->(Merchant)
-(Transaction)-[:USING]->(Device)
-(Person)-[:SHARES_DEVICE]->(Person)
-(Person)-[:SHARES_ADDRESS]->(Person)
+Account-centric model (preferred for ring detection — cycles traverse Account→Transaction→Account):
 ```
+(Account {accountId, owner, type, balance, createdAt, status})
+(Transaction {txId, amount, currency, timestamp, status})
+
+(Account)-[:PERFORMS]->(Transaction)   ← sender
+(Transaction)-[:BENEFITS_TO]->(Account) ← receiver
+```
+
+Extended model (add as needed):
+```
+(Account)-[:USES_PHONE]->(Phone {number})
+(Account)-[:USES_EMAIL]->(Email {address})
+(Transaction)-[:VIA]->(Device {deviceId, ip})
+```
+
+**Why PERFORMS/BENEFITS_TO (not FROM/TO on Transaction):** The ring detection pattern
+`(a)-[:PERFORMS]->()-[:BENEFITS_TO]->(b)` creates a direct Account→Account traversal path
+that can be chained as variable-length paths for cycle detection. Transaction-centric
+models `(tx)-[:FROM]->(a)` require more complex patterns and are harder to chain.
 
 ### DDL
 ```cypher
 CYPHER 25
-CREATE CONSTRAINT account_id IF NOT EXISTS FOR (a:Account) REQUIRE a.id IS UNIQUE;
-CREATE CONSTRAINT transaction_id IF NOT EXISTS FOR (t:Transaction) REQUIRE t.id IS UNIQUE;
-CREATE CONSTRAINT person_id IF NOT EXISTS FOR (p:Person) REQUIRE p.id IS UNIQUE;
-CREATE INDEX transaction_timestamp IF NOT EXISTS FOR (t:Transaction) ON (t.timestamp);
+CREATE CONSTRAINT account_id IF NOT EXISTS FOR (a:Account) REQUIRE a.accountId IS UNIQUE;
+CREATE CONSTRAINT transaction_id IF NOT EXISTS FOR (t:Transaction) REQUIRE t.txId IS UNIQUE;
 CREATE INDEX account_status IF NOT EXISTS FOR (a:Account) ON (a.status);
+CREATE INDEX transaction_timestamp IF NOT EXISTS FOR (t:Transaction) ON (t.timestamp);
+CREATE INDEX transaction_amount IF NOT EXISTS FOR (t:Transaction) ON (t.amount);
 ```
 
 ### Key queries
 ```cypher
-// Detect shared identifiers (fraud ring pattern)
+// Transaction rings — accounts cycling funds (3–6 hops back to origin)
+// This is the canonical fraud ring query; SQL cannot do this efficiently
 CYPHER 25
-MATCH (p1:Person)-[:SHARES_DEVICE|SHARES_ADDRESS]-(p2:Person)
-WHERE p1.id < p2.id
-RETURN p1.name, p2.name, 
-       [(p1)-[r]-(p2) | type(r)] AS sharedFactors
-ORDER BY size(sharedFactors) DESC LIMIT 20;
+MATCH path = (start:Account)-[:PERFORMS]->(:Transaction)-[:BENEFITS_TO*1..5]->(start)
+WHERE ALL(n IN nodes(path) WHERE n:Account OR n:Transaction)
+WITH start, length(path) AS ringLength, path
+ORDER BY ringLength
+RETURN start.accountId AS originAccount, ringLength, 
+       [n IN nodes(path) WHERE n:Account | n.accountId] AS ring
+LIMIT 20;
 
-// High-velocity transaction accounts
+// Accounts sharing a phone number (shared identifier clusters)
 CYPHER 25
-MATCH (a:Account)<-[:FROM]-(t:Transaction)
-WHERE t.timestamp > datetime() - duration('PT24H')
-WITH a, count(t) AS txCount, sum(t.amount) AS totalAmount
-WHERE txCount > 20
-RETURN a.id, txCount, totalAmount ORDER BY txCount DESC;
+MATCH (a1:Account)-[:USES_PHONE]->(p:Phone)<-[:USES_PHONE]-(a2:Account)
+WHERE a1.accountId < a2.accountId
+RETURN p.number AS sharedPhone, collect(a1.accountId) + collect(a2.accountId) AS accounts
+ORDER BY size(accounts) DESC LIMIT 20;
+
+// High-velocity accounts (potential smurfing)
+CYPHER 25
+MATCH (a:Account)-[:PERFORMS]->(t:Transaction)
+WITH a, count(t) AS txCount, sum(t.amount) AS totalOut
+WHERE txCount > 10
+RETURN a.accountId AS account, txCount, totalOut
+ORDER BY txCount DESC LIMIT 20;
+```
+
+### Synthetic data guidance (generate.py)
+
+**Always plant explicit ring patterns** — random transactions will almost never form cycles.
+Generate rings deliberately:
+
+```python
+# Plant ring patterns: A→B→C→A with ≤20% amount decay per hop (realistic fee/skimming)
+rings = [
+    ["acc001", "acc002", "acc003"],          # 3-hop ring
+    ["acc004", "acc005", "acc006", "acc007"], # 4-hop ring
+    ["acc008", "acc009", "acc010", "acc011", "acc012"],  # 5-hop ring
+]
+for ring in rings:
+    amount = random.uniform(5000, 20000)
+    for i, src in enumerate(ring):
+        tgt = ring[(i + 1) % len(ring)]
+        amount *= random.uniform(0.80, 0.98)  # 2–20% decay per hop
+        transactions.append({
+            "txId": f"ring_tx_{src}_{tgt}",
+            "fromAccount": src, "toAccount": tgt,
+            "amount": round(amount, 2),
+            "timestamp": (datetime.now() - timedelta(hours=random.randint(1, 72))).isoformat(),
+            "status": "completed",
+        })
 ```
 
 ---

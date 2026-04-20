@@ -10,7 +10,7 @@ REPO_ROOT := $(CURDIR)/..
 
 .PHONY: install-skill uninstall-skill reinstall-skill \
         test-cypher test-load \
-        integration-alex integration-sam \
+        integration-alex integration-sam integration-priya integration-elena \
         integration-alex-from-explore \
         test-quick manual help
 
@@ -27,8 +27,10 @@ help:
 	@echo "  make test-load        Validate Python load scripts"
 	@echo ""
 	@echo "Integration tests (installs skill, runs Claude, validates gates):"
-	@echo "  make integration-alex  Persona: Alex (beginner, social, notebook)"
-	@echo "  make integration-sam   Persona: Sam (developer, e-commerce, FastAPI)"
+	@echo "  make integration-alex    Persona: Alex (beginner, social, notebook)"
+	@echo "  make integration-sam     Persona: Sam (developer, e-commerce, FastAPI)"
+	@echo "  make integration-priya   Persona: Priya (compliance analyst, fintech fraud rings, Streamlit)"
+	@echo "  make integration-elena   Persona: Elena (clinical informatics, patient journey, Docker, notebook)"
 	@echo ""
 	@echo "Other:"
 	@echo "  make test-quick    Validate skill file structure (no Claude)"
@@ -74,7 +76,19 @@ integration-alex: reinstall-skill
 
 integration-sam: reinstall-skill
 	@echo "Running integration test: sam_developer ..."
-	python3 $(HARNESS) --persona $(PERSONAS_DIR)/sam_developer.yml --verbose
+	python3 $(HARNESS) --persona $(PERSONAS_DIR)/sam_developer.yml \
+	  --fixture $(CURDIR)/tests/fixtures/sam_ecommerce --verbose
+	@$(MAKE) --no-print-directory uninstall-skill
+
+integration-priya: reinstall-skill
+	@echo "Running integration test: priya_analyst ..."
+	python3 $(HARNESS) --persona $(PERSONAS_DIR)/priya_analyst.yml --verbose
+	@$(MAKE) --no-print-directory uninstall-skill
+
+integration-elena: reinstall-skill
+	@echo "Running integration test: elena_healthcare ..."
+	@echo "(Requires Docker — runner starts/stops neo4j-elena-test container)"
+	python3 $(HARNESS) --persona $(PERSONAS_DIR)/elena_healthcare.yml --verbose
 	@$(MAKE) --no-print-directory uninstall-skill
 
 integration-alex-from-explore: reinstall-skill
@@ -101,6 +115,8 @@ test-quick:
 	@test -f references/capabilities/mcp-config.md && echo "  ✓ mcp-config.md" || echo "  ✗ mcp-config.md MISSING"
 	@test -f tests/personas/alex_beginner.yml && echo "  ✓ alex_beginner.yml" || echo "  ✗ alex_beginner.yml MISSING"
 	@test -f tests/personas/sam_developer.yml && echo "  ✓ sam_developer.yml" || echo "  ✗ sam_developer.yml MISSING"
+	@test -f tests/personas/priya_analyst.yml && echo "  ✓ priya_analyst.yml" || echo "  ✗ priya_analyst.yml MISSING"
+	@test -f tests/personas/elena_healthcare.yml && echo "  ✓ elena_healthcare.yml" || echo "  ✗ elena_healthcare.yml MISSING"
 	@test -f tests/harness/runner.py && echo "  ✓ runner.py" || echo "  ✗ runner.py MISSING"
 	@test -f tests/harness/validator.py && echo "  ✓ validator.py" || echo "  ✗ validator.py MISSING"
 	@test -f scripts/validate_queries.py && echo "  ✓ scripts/validate_queries.py" || echo "  ✗ scripts/validate_queries.py MISSING"

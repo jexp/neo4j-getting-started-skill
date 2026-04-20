@@ -1,7 +1,21 @@
 # Stage 1 — context
 # Collect the user's domain, use-case, goals, and preferences.
 
-## What to ask
+## Autonomous mode detection — do this FIRST
+
+Before asking anything, check whether all context variables are already present in the initial prompt. Look for: domain, use-case, experience level, database target, data source, and app type — either as explicit key=value pairs or as natural language ("Domain: social, use-case: friend recommendations, experience: beginner, database: aura-free, data: synthetic, app: notebook").
+
+**If all 6 variables can be extracted from the initial prompt → AUTONOMOUS MODE.**
+- Extract and record them immediately (no questions needed)
+- Record `MODE=autonomous` in progress.md alongside the other variables
+- Never pause for approval at any HITL checkpoint in any stage
+- Proceed through all 8 stages without stopping
+
+**If any variable is missing → HITL MODE.**
+- Ask all missing questions in one combined message (see below)
+- Record `MODE=hitl` in progress.md
+
+## What to ask (HITL mode only)
 
 Combine into one conversational message — not a form dump. If any value is already known from context, skip that question.
 
@@ -24,6 +38,10 @@ Hi! To get you up and running with Neo4j, I need a few things:
    C) Local Docker — I have Docker installed
    D) Neo4j Desktop — GUI, already installed
    E) I already have a running database
+
+   If they choose Aura Pro (B), ask as a follow-up:
+   "Any cloud provider preference? (GCP / AWS / Azure — or leave blank and I'll pick the closest region to you)"
+   Skip this follow-up for Aura Free (GCP only) and local options.
 
 5. What data do you have?
    A) Start with a pre-built demo dataset — fastest path to first insight
@@ -54,14 +72,45 @@ EXPERIENCE   = beginner
 ## Variables to store
 
 ```
-DOMAIN       = <domain/industry>
-USE_CASE     = <specific use-case description>
-EXPERIENCE   = beginner | intermediate | advanced
-DB_TARGET    = aura-free | aura-pro | local-docker | local-desktop | existing
-DATA_SOURCE  = demo | synthetic | csv | relational | documents
-APP_TYPE     = notebook | streamlit | fastapi | graphrag | explore-only | mcp
-LANGUAGE     = python  (v1 only; javascript in phase 2)
+DOMAIN          = <domain/industry>
+USE_CASE        = <specific use-case description>
+EXPERIENCE      = beginner | intermediate | advanced
+DB_TARGET       = aura-free | aura-pro | local-docker | local-desktop | existing
+DATA_SOURCE     = demo | synthetic | csv | relational | documents
+APP_TYPE        = notebook | streamlit | fastapi | graphrag | explore-only | mcp
+LANGUAGE        = python  (v1 only; javascript in phase 2)
+CLOUD_PROVIDER  = gcp | aws | azure | (omit if no preference)
+REGION_HINT     = <geographic hint inferred from user context — see below>
 ```
+
+`CLOUD_PROVIDER` comes from **user preference** (asked for Aura Pro only).
+`REGION_HINT` is **inferred** from geographic signals (never asked).
+
+The provision stage combines both: use the user's preferred provider, then pick the closest available region within that provider using the geographic hint.
+
+### REGION_HINT — infer, don't ask
+
+Infer from any available signal — do not ask:
+- Explicit mention: "I'm in Brazil", "our servers are in Tokyo", "EU data residency required"
+- Language/locale of the conversation
+- Timezone in system prompt or `date` output (e.g. `CET` → western Europe, `BRT` → Brazil)
+- Initial prompt already contains a region → use it directly
+
+Store only the **geographic area**, not a cloud-specific region — the provision stage maps it to the user's chosen provider:
+
+| Signal | REGION_HINT |
+|--------|------------|
+| Western Europe / CET / BST / CEST | `europe-west` |
+| Eastern Europe | `europe-east` |
+| US East Coast / EST / EDT | `us-east` |
+| US West Coast / PST / PDT | `us-west` |
+| Brazil / BRT | `sa-east` |
+| Singapore / SGT | `ap-southeast` |
+| Japan / JST | `ap-northeast` |
+| Australia / AEST / AEDT | `ap-southeast` |
+| No signal | (omit — provision stage uses first available) |
+
+The provision stage maps `REGION_HINT` + `CLOUD_PROVIDER` to an actual Aura region from the tenant's available configurations.
 
 If `APP_TYPE=graphrag`, also collect:
 ```
@@ -104,6 +153,7 @@ of `${CLAUDE_SKILL_DIR}/references/capabilities/execute-cypher.md` in subsequent
 ```markdown
 ### 1-context
 status: done
+MODE=<autonomous|hitl>
 DOMAIN=<value>
 USE_CASE=<value>
 EXPERIENCE=<beginner|intermediate|advanced>
@@ -111,6 +161,8 @@ DB_TARGET=<value>
 DATA_SOURCE=<value>
 APP_TYPE=<value>
 EXEC_METHOD=<mcp|cypher-shell|query-api>
+CLOUD_PROVIDER=<gcp|aws|azure — omit if no preference stated>
+REGION_HINT=<e.g. europe-west, us-east, sa-east — omit if no signal>
 ```
 
 Include `EMBEDDING_PROVIDER` and `EMBEDDING_MODEL` if `APP_TYPE=graphrag`.

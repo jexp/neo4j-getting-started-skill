@@ -232,6 +232,57 @@ def _read_instance_id(work_dir: Path) -> Optional[str]:
     return m.group(1).strip() if m else None
 
 
+def start_docker_neo4j(container_name: str, password: str, verbose: bool = False) -> bool:
+    """Start a Neo4j Docker container and wait for Bolt to be ready. Returns True on success."""
+    # Remove any leftover container with same name
+    subprocess.run(["docker", "rm", "-f", container_name],
+                   capture_output=True, text=True)
+
+    cmd = [
+        "docker", "run", "-d",
+        "--name", container_name,
+        "-p", "7687:7687",
+        "-p", "7474:7474",
+        "-e", f"NEO4J_AUTH=neo4j/{password}",
+        "-e", "NEO4J_ACCEPT_LICENSE_AGREEMENT=yes",
+        "neo4j:enterprise",
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"[Runner] ERROR: failed to start Docker container: {result.stderr}")
+        return False
+    if verbose:
+        print(f"[Runner] Docker container {container_name} started")
+
+    # Wait for Bolt to accept connections (up to 90s)
+    from neo4j import GraphDatabase
+    for attempt in range(18):
+        try:
+            driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", password))
+            driver.verify_connectivity()
+            driver.close()
+            if verbose:
+                print(f"[Runner] Neo4j Bolt ready after {attempt * 5}s")
+            return True
+        except Exception as e:
+            if attempt == 0 and verbose:
+                print(f"[Runner] Waiting for Neo4j to start...")
+            time.sleep(5)
+    print(f"[Runner] ERROR: Neo4j Bolt did not become ready after 90s")
+    return False
+
+
+def stop_docker_neo4j(container_name: str, verbose: bool = False) -> None:
+    """Stop and remove a Neo4j Docker container."""
+    result = subprocess.run(["docker", "rm", "-f", container_name],
+                            capture_output=True, text=True)
+    if result.returncode == 0:
+        if verbose:
+            print(f"[Runner] Docker container {container_name} removed")
+    else:
+        print(f"[Runner] WARNING: failed to remove container {container_name}: {result.stderr.strip()}")
+
+
 def load_persona(persona_path: str) -> dict:
     with open(persona_path) as f:
         return yaml.safe_load(f)
@@ -242,17 +293,30 @@ def build_initial_prompt(persona: dict) -> str:
     inputs = persona["inputs"]
     p = persona["persona"]
 
-    return (
-        f"I want to get started with Neo4j. "
-        f"Domain: {inputs['domain']}, "
-        f"use-case: {inputs['use_case']}, "
-        f"experience: {inputs['experience']} ({p['background']}), "
-        f"database: {inputs['db_target']}, "
-        f"data: {inputs['data_source']}, "
-        f"app: {inputs['app_type']} in {inputs.get('language', 'python')}, "
-        f"integration: {inputs.get('integration', 'none')}. "
-        f"Please guide me through the complete getting-started process."
-    )
+    parts = [
+        "I want to get started with Neo4j.",
+        f"Domain: {inputs['domain']},",
+        f"use-case: {inputs['use_case']},",
+        f"experience: {inputs['experience']} ({p['background']}),",
+        f"database: {inputs['db_target']}",
+    ]
+
+    if inputs.get("cloud_provider"):
+        parts[-1] += f" on {inputs['cloud_provider']},"
+    else:
+        parts[-1] += ","
+
+    parts.append(f"data: {inputs['data_source']},")
+
+    if inputs.get("csv_files"):
+        names = [f["name"] for f in inputs["csv_files"]]
+        parts.append(f"csv files available in data/: {', '.join(names)},")
+
+    parts.append(f"app: {inputs['app_type']} in {inputs.get('language', 'python')},")
+    parts.append(f"integration: {inputs.get('integration', 'none')}.")
+    parts.append("Please guide me through the complete getting-started process.")
+
+    return " ".join(parts)
 
 
 def run_skill(persona: dict, work_dir: Path, verbose: bool = False) -> tuple[str, str, float]:
@@ -351,9 +415,16 @@ def run_skill(persona: dict, work_dir: Path, verbose: bool = False) -> tuple[str
                     KNOWN = ["0-prerequisites","1-context","2-provision","3-model",
                              "4-load","5-explore","6-query","7-build"]
                     announced = {s for s, _ in stage_times} | {current_stage}
+                    # Collapse consecutive duplicate stage names (parallel flow re-enters same stage)
+                    deduped = []
+                    for s, t in stage_times:
+                        if deduped and deduped[-1][0] == s:
+                            deduped[-1] = (s, t)  # keep latest timestamp
+                        else:
+                            deduped.append((s, t))
                     # insert skipped stages at 0s so timing rows are complete
                     full = []
-                    for s, t in stage_times:
+                    for s, t in deduped:
                         full.append((s, t))
                         # if next known stage was skipped, add it at same timestamp
                         idx = KNOWN.index(s) if s in KNOWN else -1
@@ -396,22 +467,35 @@ def run_skill(persona: dict, work_dir: Path, verbose: bool = False) -> tuple[str
     t_out.start(); t_err.start()
 
     timeout = persona["test_config"]["timeout_seconds"]
+
+    # Wait for the stdout thread — it breaks as soon as the 'result' event arrives,
+    # so this returns promptly when Claude finishes even if the process hangs.
+    t_out.join(timeout=timeout)
+
+    # Give the process a 10s grace period to exit cleanly, then terminate it.
+    # This handles the common case where the Claude CLI hangs after --print completes.
+    if proc.poll() is None:
+        if verbose:
+            print("[Runner] Process still running after result received — sending SIGTERM")
+        proc.terminate()
+        try:
+            proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            if verbose:
+                print("[Runner] SIGTERM ignored — sending SIGKILL")
+            proc.kill()
+
+    # Close pipes so the stderr thread unblocks, then join both threads
     try:
-        proc.wait(timeout=timeout)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-    finally:
-        # Close pipes so streaming threads unblock if process left children holding them open
-        try:
-            proc.stdout.close()
-        except Exception:
-            pass
-        try:
-            proc.stderr.close()
-        except Exception:
-            pass
-        t_out.join(timeout=5)
-        t_err.join(timeout=5)
+        proc.stdout.close()
+    except Exception:
+        pass
+    try:
+        proc.stderr.close()
+    except Exception:
+        pass
+    t_out.join(timeout=5)
+    t_err.join(timeout=5)
 
     elapsed = time.time() - start
 
@@ -428,14 +512,19 @@ def validate_gates(persona: dict, work_dir: Path, elapsed: float) -> List[GateRe
     v = Validator(work_dir, persona)
     results = []
 
-    for gate in persona["success_gates"]:
-        t0 = time.time()
-        try:
-            passed, message = v.check(gate["id"])
-        except Exception as e:
-            passed, message = False, f"Exception: {e}"
-        elapsed_ms = int((time.time() - t0) * 1000)
-        results.append(GateResult(gate["id"], passed, message, elapsed_ms))
+    try:
+        for gate in persona["success_gates"]:
+            if gate["id"] == "time_budget":
+                continue  # handled separately below using overall elapsed
+            t0 = time.time()
+            try:
+                passed, message = v.check(gate["id"])
+            except Exception as e:
+                passed, message = False, f"Exception: {e}"
+            elapsed_ms = int((time.time() - t0) * 1000)
+            results.append(GateResult(gate["id"], passed, message, elapsed_ms))
+    finally:
+        v.close()
 
     # Time budget gate (special — uses overall elapsed)
     time_limit = persona["test_config"]["timeout_seconds"]
@@ -518,7 +607,11 @@ def run_persona(persona_path: str, verbose: bool = False, keep_skill: bool = Fal
         if verbose:
             print(f"[Runner] Copied fixture files from {fixture_path}")
 
-    if AURA_ENV_SRC.exists():
+    # Determine whether this is a local-docker run (aura.env not needed for those)
+    tc = persona.get("test_config", {})
+    is_docker = bool(tc.get("docker_db") and persona["inputs"].get("db_target") == "local-docker")
+
+    if not is_docker and AURA_ENV_SRC.exists():
         shutil.copy(str(AURA_ENV_SRC), str(work_dir / "aura.env"))
         if verbose:
             print(f"[Runner] Copied aura.env → {work_dir}/aura.env")
@@ -547,11 +640,60 @@ def run_persona(persona_path: str, verbose: bool = False, keep_skill: bool = Fal
                     progress_md.write_text(content.replace("__NEO4J_URI__", aura_vars["NEO4J_URI"]))
                     if verbose:
                         print(f"[Runner] Patched NEO4J_URI in fixture progress.md")
-    else:
+    elif not is_docker:
         print(f"[Runner] WARNING: {AURA_ENV_SRC} not found — skill will prompt for Aura credentials")
 
+    # Docker DB path: start container and pre-populate .env + progress.md
+    docker_container = None
+    if is_docker:
+        docker_container = tc.get("docker_container_name", f"neo4j-test-{persona_id}")
+        docker_password  = tc.get("docker_password", "testpassword123")
+        print(f"[Runner] Starting Docker container: {docker_container}")
+        ok = start_docker_neo4j(docker_container, docker_password, verbose=verbose)
+        if not ok:
+            print(f"[Runner] FATAL: could not start Docker Neo4j — aborting")
+            sys.exit(2)
+        # Write .env so skill skips provisioning
+        dot_env_path = work_dir / ".env"
+        dot_env_path.write_text(
+            f"NEO4J_URI=bolt://localhost:7687\n"
+            f"NEO4J_USERNAME=neo4j\n"
+            f"NEO4J_PASSWORD={docker_password}\n"
+            f"NEO4J_DATABASE=neo4j\n"
+        )
+        # Write minimal progress.md so skill skips provision stage.
+        # Include all provision fields (including CONTAINER_NAME) so the skill
+        # sees a complete section and does not re-enter stage 2.
+        (work_dir / "progress.md").write_text(
+            "# Neo4j Getting-Started — Progress\n"
+            "<!-- Resume: grep for \"status: pending\" to find the next stage -->\n\n"
+            "### 0-prerequisites\n"
+            "status: done\n"
+            f"PYTHON=python3\n"
+            f"VENV=.venv\n\n"
+            "### 1-context\n"
+            "status: pending\n\n"
+            "### 2-provision\n"
+            "status: done\n"
+            "NEO4J_URI=bolt://localhost:7687\n"
+            "NEO4J_USERNAME=neo4j\n"
+            "NEO4J_DATABASE=neo4j\n"
+            f"CONTAINER_NAME={docker_container}\n\n"
+            "### 3-model\n"
+            "status: pending\n\n"
+            "### 4-load\n"
+            "status: pending\n\n"
+            "### 5-explore\n"
+            "status: pending\n\n"
+            "### 6-query\n"
+            "status: pending\n\n"
+            "### 7-build\n"
+            "status: pending\n"
+        )
+        print(f"[Runner] Pre-populated .env and progress.md for Docker DB")
+
     # Track whether .env was pre-populated (pre-existing DB) or will be provisioned
-    preexisting_db = (work_dir / ".env").exists()
+    preexisting_db = (work_dir / ".env").exists() and docker_container is None
 
     install_skill(verbose=verbose)
     try:
@@ -585,7 +727,12 @@ def run_persona(persona_path: str, verbose: bool = False, keep_skill: bool = Fal
 
     # Post-run DB cleanup
     instance_id = _read_instance_id(work_dir)
-    if preexisting_db:
+    if docker_container and delete_db:
+        print(f"[Runner] Stopping Docker container {docker_container}...")
+        stop_docker_neo4j(docker_container, verbose=verbose)
+    elif docker_container:
+        print(f"[Runner] Docker container {docker_container} kept running (pass --delete-db to stop and remove)")
+    elif preexisting_db:
         # Restore pre-existing DB to clean state for the next run
         env_path = work_dir / ".env"
         if env_path.exists():

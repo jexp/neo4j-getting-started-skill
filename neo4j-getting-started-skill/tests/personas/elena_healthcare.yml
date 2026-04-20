@@ -1,0 +1,125 @@
+# Persona: Elena — The Clinical Informatics Developer
+# Target completion: ≤20 min autonomous (local Docker — no cloud provisioning wait)
+
+persona:
+  id: elena_healthcare
+  name: Elena
+  description: "Clinical informatics developer at a regional hospital network building a
+                patient journey analysis notebook to help care coordinators identify gaps
+                in care pathways — patients who missed follow-up visits, diagnoses without
+                treatment, or excessive time between encounters."
+  experience: intermediate
+  background: "5 years Python + SQL, builds internal analytics tools for clinical teams,
+               new to graph databases. Has Docker installed locally. Motivated by a real
+               problem: their SQL-based patient cohort queries miss multi-hop care pathway
+               patterns (e.g. diagnosis → referral → visit → outcome) that are natural
+               graph traversals."
+
+inputs:
+  domain: healthcare
+  use_case: "patient journey analysis — tracking encounters, diagnoses, and care gaps across providers"
+  experience: intermediate
+  db_target: local-docker
+  data_source: synthetic
+  app_type: notebook
+  language: python
+  framework: jupyter
+  integration: none
+
+# What the skill should produce
+expected_outputs:
+  files:
+    - .env
+    - schema/schema.json
+    - schema/schema.cypher
+    - schema/reset.cypher
+    - data/generate.py
+    - queries/queries.cypher
+    - notebook.ipynb
+    - requirements.txt
+    - README.md
+
+  db_state:
+    min_node_labels: 3      # Patient + Encounter + Provider minimum
+    min_rel_types: 2        # HAS_ENCOUNTER + SEEN_BY minimum
+    min_nodes: 100
+    min_relationships: 200
+
+  queries:
+    min_count: 5
+    min_returning_results: 3
+    examples:
+      - "Count patients, encounters, diagnoses, and providers"
+      - "Patient journey: all encounters for a given patient ordered by date"
+      - "Care gap detection: patients with a diagnosis but no follow-up encounter within 90 days"
+      - "Provider workload: encounters per provider by specialty"
+      - "Most common diagnosis codes and their co-occurring conditions"
+      - "Patients seen by more than 3 different providers (high care fragmentation)"
+
+  # Notebook-specific: what cells the notebook should have
+  notebook_cells:
+    - "Setup: imports + .env loading"
+    - "Connection: driver creation + verify_connectivity"
+    - "Schema overview: node labels and relationship types as DataFrame"
+    - "Patient journey query results as DataFrame"
+    - "Graph visualization via neo4j-viz"
+    - "Care gap analysis: assertion that results are non-empty"
+
+# Success gates (all must pass)
+success_gates:
+  - id: db_running
+    description: "Can connect to the local Neo4j Docker instance"
+    check: "driver.verify_connectivity() does not throw on bolt://localhost:7687"
+
+  - id: model_valid
+    description: "Schema has ≥3 node labels, ≥2 relationship types, ≥2 constraints"
+    check: "SHOW CONSTRAINTS returns ≥2 constraints"
+
+  - id: data_present
+    description: "Synthetic patient data loaded"
+    check: "MATCH (n) RETURN count(n) >= 100"
+
+  - id: queries_work
+    description: "Patient journey queries return results"
+    check: "At least 3 of 5 queries return ≥1 row"
+
+  - id: graph_visible
+    description: "Browser URL delivered to user"
+    check: "browser_url recorded in progress.md 5-explore section"
+
+  - id: app_generated
+    description: "Jupyter notebook exists and is valid JSON"
+    check: "notebook.ipynb parses as valid JSON"
+
+  - id: time_budget
+    description: "Completed within time budget"
+    check: "elapsed <= 1500s"
+
+# Test execution config
+test_config:
+  mode: autonomous
+  timeout_seconds: 1800   # local Docker — skill finishes ~1000s; extra headroom for subprocess exit
+
+  # Runner will start a Docker container and pre-populate .env before invoking Claude
+  docker_db: true
+  docker_container_name: neo4j-elena-test
+  docker_password: testpassword123
+
+  user_inputs_inject:
+    - prompt: "domain"
+      response: "Healthcare — I work in clinical informatics at a hospital network"
+    - prompt: "use.case"
+      response: "Patient journey analysis — I want to track patient encounters across
+                 providers, identify care gaps (diagnoses without follow-up), and visualize
+                 care pathways that our SQL reports miss"
+    - prompt: "experience"
+      response: "Intermediate — 5 years Python and SQL, first time with a graph database,
+                 I have Docker installed locally"
+    - prompt: "database"
+      response: "Local Docker — I want to run it on my laptop first before involving cloud"
+    - prompt: "data"
+      response: "Generate synthetic data that looks like real patient encounters — include
+                 a few patients with care gaps so the analysis queries actually show results"
+    - prompt: "build"
+      response: "A Jupyter notebook I can share with care coordinators and run myself
+                 to explore patient journey patterns"

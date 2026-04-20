@@ -44,13 +44,31 @@ docker --version 2>/dev/null && echo "FOUND" || echo "MISSING"
 ## Python (required for app generation)
 
 ```bash
-python3 --version   # need >=3.10
+python3 --version && which python3
 ```
+
+**STOP. Use ONLY `python3` — never probe `python3.10`, `python3.11`, `python3.12`, `python3.13` etc. individually. One command, one result. Any version ≥3.10 is fine.**
+
+## Python virtual environment (required — always create)
+
+Modern Python (3.12+, all macOS system Pythons) **forbids global `pip install`** with the "externally-managed-environment" error. A `.venv` in the working directory is required for all package installs.
+
+```bash
+python3 -m venv .venv
+echo "✓ Virtual environment created at .venv"
+```
+
+All subsequent `pip install`, `python3 script.py`, `jupyter`, `streamlit`, and `uvicorn` commands must use this venv:
+- Install: `.venv/bin/pip install ...`
+- Run scripts: `.venv/bin/python3 script.py`
+- Run app: `.venv/bin/jupyter notebook ...` / `.venv/bin/streamlit run ...` / `.venv/bin/uvicorn ...`
+
+**Never use bare `pip install` or `python3` commands after this point — they may target the wrong (system) Python.**
 
 ## .gitignore setup (always run)
 
 ```bash
-for entry in .env aura.env neo4j-mcp; do
+for entry in .env aura.env neo4j-mcp "mcp-*.json" .provision.lock neo4j-data/ .venv/; do
   grep -qxF "$entry" .gitignore 2>/dev/null || echo "$entry" >> .gitignore
 done
 echo "✓ .gitignore updated"
@@ -59,12 +77,16 @@ echo "✓ .gitignore updated"
 ## Completion condition
 
 - `neo4j-mcp` binary reachable (local or on PATH)
-- `.gitignore` contains `.env` and `aura.env`
+- `.gitignore` contains `.env`, `aura.env`, and `.venv/`
 - Python ≥3.10 available
+- `.venv/` created in working directory
 
 ## On Completion — write to progress.md
 
 ```markdown
 ### 0-prerequisites
 status: done
+PYTHON=<path from `which python3`>
+NEO4J_MCP=<path from `which neo4j-mcp` or local path>
+VENV=.venv
 ```

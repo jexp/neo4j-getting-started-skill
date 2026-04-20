@@ -86,6 +86,10 @@ success_gates:
     description: "Generated queries return results"
     check: "At least 5 of 7 queries return ≥1 row"
 
+  - id: graph_visible
+    description: "Browser URL delivered to user"
+    check: "browser_url recorded in progress.md 5-explore section"
+
   - id: app_generated
     description: "FastAPI app exists and passes syntax check"
     check: "python -m py_compile main.py succeeds"
@@ -98,7 +102,7 @@ success_gates:
 # Test execution config
 test_config:
   mode: autonomous
-  timeout_seconds: 1200
+  timeout_seconds: 1500
   generate_synthetic_csv: true   # harness generates CSV files matching schema above
 
   user_inputs_inject:

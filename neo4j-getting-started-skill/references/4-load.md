@@ -106,7 +106,7 @@ print(f"PART_OF rels: {n}")
 driver.close()
 ```
 
-Run: `python3 data/import.py`
+Run: `.venv/bin/python3 data/import.py`
 
 ### Type coercion in Cypher vs Python
 
@@ -176,7 +176,7 @@ with open("data/follows.csv", "w", newline="") as f:
 print("✓ CSVs written:", [f for f in os.listdir("data") if f.endswith(".csv")])
 ```
 
-Run: `python3 data/generate.py`
+Run: `.venv/bin/python3 data/generate.py`
 
 ### Step B2 — Import CSVs (`data/import.py`)
 
@@ -228,13 +228,13 @@ for r in records:
 driver.close()
 ```
 
-Run: `python3 data/import.py`
+Run: `.venv/bin/python3 data/import.py`
 
 ## Path C — CSV / tabular data (any source)
 
 Use the **Python batch loading pattern** above. Install dependencies first:
 ```bash
-pip install neo4j neo4j-rust-ext pandas
+.venv/bin/pip install neo4j-rust-ext pandas python-dotenv
 ```
 
 Adapt the DataFrame source to match:

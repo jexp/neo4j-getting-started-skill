@@ -2,12 +2,28 @@
 # Generate a runnable application, dashboard, or agent integration.
 # v1: Python only. JavaScript in phase 2.
 
+## Virtual environment (required — always use .venv)
+
+Modern Python (3.12+) forbids global `pip install`. All installs and runs must go through the `.venv` created in stage 0.
+
+**Before installing requirements**, ensure dependencies are in the venv:
+```bash
+.venv/bin/pip install -r requirements.txt
+```
+
+Never use bare `pip install` or `python3` — always `.venv/bin/pip` and `.venv/bin/python3`.
+
 ## Always include in requirements.txt
 
 ```
 neo4j-rust-ext>=0.0.1
 python-dotenv>=1.0.0
 ```
+
+**CRITICAL**: Do **not** add `neo4j` as a standalone dependency — it is a transitive dependency of `neo4j-rust-ext`.
+If you write `neo4j>=...` in requirements.txt, delete it and replace with `neo4j-rust-ext>=0.0.1`.
+
+Add `neo4j-viz>=1.0.0` to requirements.txt for **Path A (notebook) and Path B (Streamlit)** — it is used for graph visualization and must be listed explicitly.
 
 ## Path selection
 
@@ -58,7 +74,7 @@ print(f"✓ Use-case query works: {len(df)} recommendations")
 driver.close()
 ```
 
-Run: `python3 -c "..."` or write to a temp file and run it. **Only proceed to notebook composition once this passes.**
+Run: write to a temp file and run it: `.venv/bin/python3 /tmp/smoke_test.py`. **Only proceed to notebook composition once this passes.**
 
 ### Step A1 — Compose `notebook.ipynb`
 
@@ -73,7 +89,7 @@ Required cells (keep each cell focused — no multi-page cells):
 
 ```python
 # Cell: Setup (run once if packages are missing)
-# %pip install -q neo4j python-dotenv pandas matplotlib neo4j-viz
+# %pip install -q neo4j-rust-ext python-dotenv pandas matplotlib neo4j-viz
 ```
 
 ```python
@@ -125,11 +141,18 @@ assert len(df) > 0, "No recommendations — check import and traversal query"
 df.plot(kind='barh', x='recommendation', y='mutual', title='Recommendations')
 ```
 
-Validate: `python -m json.tool notebook.ipynb > /dev/null && echo "✓ Valid notebook"`
+Validate: `python3 -m json.tool notebook.ipynb > /dev/null && echo "✓ Valid notebook"`
+
+Install and run:
+```bash
+.venv/bin/pip install -r requirements.txt
+.venv/bin/jupyter notebook notebook.ipynb
+```
 
 Add to `requirements.txt`:
 ```
 jupyter>=1.0.0
+ipykernel>=6.0.0
 pandas>=2.0.0
 matplotlib>=3.0.0
 neo4j-viz>=1.0.0
@@ -141,7 +164,8 @@ Generate `app.py`:
 
 ```python
 import streamlit as st
-from neo4j import GraphDatabase
+from neo4j import GraphDatabase, RoutingControl
+from neo4j_viz.neo4j import from_neo4j
 from dotenv import load_dotenv
 import os, pandas as pd
 
@@ -155,9 +179,10 @@ def get_driver():
     )
 
 def run_query(q, params={}):
-    driver = get_driver()
-    records, _, _ = driver.execute_query(q, parameters_=params,
-                                          database_=os.environ.get("NEO4J_DATABASE","neo4j"))
+    records, _, _ = get_driver().execute_query(
+        q, parameters_=params,
+        database_=os.environ.get("NEO4J_DATABASE", "neo4j")
+    )
     return pd.DataFrame([r.data() for r in records])
 
 st.title(f"{DOMAIN} — {USE_CASE}")
@@ -170,62 +195,159 @@ st.header("Database Overview")
 df = run_query("CYPHER 25 MATCH (n) RETURN labels(n)[0] AS label, count(n) AS count")
 st.bar_chart(df.set_index("label"))
 
-# Section 2: Use-case answer (adapt to domain)
+# Section 2: Graph visualization — REQUIRED, do not skip
+st.header("Graph Visualization")
+result = get_driver().execute_query(
+    "CYPHER 25 MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 50",
+    routing_=RoutingControl.READ,
+    database_=os.environ.get("NEO4J_DATABASE", "neo4j")
+)
+vg = from_neo4j(result)
+vg.color_nodes(field="caption")
+# render() returns IPython.display.HTML — extract .data for Streamlit
+st.components.v1.html(vg.render().data, height=500, scrolling=True)
+
+# Section 3: Use-case answer (adapt to domain)
 st.header("<Use-case headline>")
 df2 = run_query("<traversal query from queries.cypher>", {"limit": limit})
 st.dataframe(df2)
 assert not df2.empty, "Query returned no results"
 ```
 
-Run: `streamlit run app.py`
-Validate: `python -m py_compile app.py && echo "✓ Syntax OK"`
+Add to `requirements.txt`:
+```
+streamlit>=1.30.0
+pandas>=2.0.0
+neo4j-viz>=1.0.0
+```
+
+Install and run:
+```bash
+.venv/bin/pip install -r requirements.txt
+.venv/bin/streamlit run app.py
+```
+Validate: `.venv/bin/python3 -m py_compile app.py && echo "✓ Syntax OK"`
 
 ## Path C — FastAPI Backend
 
-Generate `main.py`:
+### Step C0 — Smoke-test connection before writing the app
 
 ```python
+# Save as /tmp/smoke_test.py and run: .venv/bin/python3 /tmp/smoke_test.py
+from neo4j import GraphDatabase
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+driver = GraphDatabase.driver(
+    os.environ["NEO4J_URI"],
+    auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"])
+)
+driver.verify_connectivity()
+records, _, _ = driver.execute_query(
+    "MATCH (n) RETURN count(n) AS total",
+    database_=os.environ.get("NEO4J_DATABASE", "neo4j")
+)
+assert records[0]["total"] > 0, "Database is empty — check load stage"
+print(f"✓ Connected. {records[0]['total']} nodes in DB")
+driver.close()
+```
+
+**Only proceed once this passes.**
+
+### Step C1 — Generate `main.py`
+
+```python
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from neo4j import GraphDatabase
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
-app = FastAPI(title=f"{DOMAIN} API — {USE_CASE}")
-driver = GraphDatabase.driver(
-    os.environ["NEO4J_URI"],
-    auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"])
-)
+
+_driver = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global _driver
+    _driver = GraphDatabase.driver(
+        os.environ["NEO4J_URI"],
+        auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"])
+    )
+    _driver.verify_connectivity()
+    yield
+    _driver.close()
+
+app = FastAPI(title=f"{DOMAIN} API — {USE_CASE}", lifespan=lifespan)
+
+def driver():
+    return _driver
 
 @app.get("/health")
 def health():
-    driver.verify_connectivity()
-    records, _, _ = driver.execute_query("MATCH (n) RETURN count(n) AS total")
+    records, _, _ = driver().execute_query(
+        "MATCH (n) RETURN count(n) AS total",
+        database_=os.environ.get("NEO4J_DATABASE", "neo4j")
+    )
     return {"status": "ok", "total_nodes": records[0]["total"]}
 
 @app.get("/<entities>")
 def list_entities(limit: int = 20):
-    records, _, _ = driver.execute_query(
+    records, _, _ = driver().execute_query(
         "CYPHER 25 MATCH (n:<Label>) RETURN n.id AS id, n.name AS name LIMIT $limit",
-        limit_=limit, database_=os.environ.get("NEO4J_DATABASE","neo4j")
+        limit=limit, database_=os.environ.get("NEO4J_DATABASE", "neo4j")
     )
     return [dict(r) for r in records]
 
 @app.get("/<entities>/{id}/recommendations")
 def recommendations(id: str, limit: int = 10):
-    records, _, _ = driver.execute_query(
+    records, _, _ = driver().execute_query(
         "<traversal query from queries.cypher>",
-        id=id, limit_=limit,
-        database_=os.environ.get("NEO4J_DATABASE","neo4j")
+        id=id, limit=limit,
+        database_=os.environ.get("NEO4J_DATABASE", "neo4j")
     )
-    result = [dict(r) for r in records]
-    assert len(result) > 0 or True  # empty is valid if entity has no connections
-    return result
+    return [dict(r) for r in records]
 ```
 
-Validate: `python -m py_compile main.py && echo "✓ Syntax OK"`
-Run: `uvicorn main:app --reload`
+**IMPORTANT — Cypher query parameter rule**: Named query parameters (`$limit`, `$id`, etc.) are passed as **keyword arguments** directly to `execute_query()`. Do NOT use `limit_=` (that is a driver keyword for the built-in `limit_` option, not a Cypher parameter). Use `limit=limit`, `id=id`, etc.
+
+**IMPORTANT — Avoid cross-product inflation in aggregate queries**: When computing counts across multiple optional relationships, use COUNT subqueries instead of sequential OPTIONAL MATCH:
+
+```cypher
+// BAD — inflates counts via cross-product:
+MATCH (c:Customer {id: $id})
+OPTIONAL MATCH (c)-[:PLACED]->(o:Order)
+OPTIONAL MATCH (o)-[:CONTAINS]->(p:Product)
+RETURN count(o) AS orders, count(p) AS products
+
+// GOOD — independent counts via subqueries:
+MATCH (c:Customer {id: $id})
+RETURN COUNT { (c)-[:PLACED]->(:Order) } AS orders,
+       COUNT { (c)-[:PLACED]->(:Order)-[:CONTAINS]->(:Product) } AS products
+```
+
+### Step C2 — Validate and run
+
+Add to `requirements.txt`:
+```
+fastapi>=0.110.0
+uvicorn>=0.29.0
+```
+
+Install, validate, and run:
+```bash
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python3 -m py_compile main.py && echo "✓ Syntax OK"
+.venv/bin/uvicorn main:app --reload
+```
 Docs: `http://localhost:8000/docs`
+
+Smoke-test the running app:
+```bash
+curl -s http://localhost:8000/health | python3 -m json.tool
+```
+Assert `total_nodes > 0` in the response.
 
 ## Path D — GraphRAG Pipeline
 
@@ -332,7 +454,7 @@ For read-only mode (recommended for production/shared DBs), add:
 status: done
 artifact=<filename, e.g. notebook.ipynb or app.py>
 app_type=<notebook|streamlit|fastapi|graphrag|mcp>
-run_command=<e.g. "jupyter notebook notebook.ipynb" or "streamlit run app.py">
+run_command=<e.g. ".venv/bin/jupyter notebook notebook.ipynb" or ".venv/bin/streamlit run app.py">
 files=<artifact filename>,requirements.txt
 ```
 
@@ -342,9 +464,10 @@ files=<artifact filename>,requirements.txt
 - At least one cell / endpoint / function returns non-empty results for the use-case query
 - `requirements.txt` written
 - MCP config written to correct location (if `APP_TYPE=mcp` or requested)
+- **`README.md` written** — required final output; follow the README template in `SKILL.md` (Final Summary section). Fill every placeholder from `progress.md` and the actual generated files. Do not skip.
 
 ## Error recovery
 
 - App returns empty results → verify `load` stage completed, check query parameter names match schema
-- Import error → check `requirements.txt`, run `pip install -r requirements.txt`
-- MCP not appearing in Claude → verify absolute path to binary, restart the app
+- Import error → check `requirements.txt`, run `.venv/bin/pip install -r requirements.txt`
+- MCP not appearing in Claude → verify absolute path to binary; for Claude Desktop restart the app; for Claude Code run `/reload` or restart Claude Code

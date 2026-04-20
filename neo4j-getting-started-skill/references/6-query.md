@@ -171,7 +171,13 @@ MATCH (n) RETURN labels(n)[0] AS label, count(n) AS count ORDER BY count DESC;
 
 - Every query starts with `CYPHER 25`
 - Always specify node labels — no label-free `MATCH (n)`
-- Use `$param` placeholders for filterable values; document defaults in comments
+- Use `$param` placeholders for filterable values; **provide a concrete default in the comment** in this exact format so the validator can auto-substitute:
+  ```
+  // $accountId = "p1"      ← validator replaces $accountId with "p1"
+  // $limit = 10            ← validator replaces $limit with 10
+  ```
+  Use `$id` or `$<label>Id` naming (e.g. `$accountId`, `$personId`) — the validator auto-substitutes these with the `sample_id` from progress.md without needing a comment.
+  **Never write** `// $param = description text` — the validator captures the first word as the default, which is wrong.
 - Every read query has `LIMIT`
 - Labels and property names are case-sensitive — match schema exactly
 - No GDS/APOC unless confirmed available

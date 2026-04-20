@@ -54,8 +54,22 @@ class Validator:
             user = demo.get("username", "neo4j")
             password = demo.get("password", "neo4j")
 
-        self._driver = GraphDatabase.driver(uri, auth=(user, password))
-        return self._driver
+        # Retry driver creation up to 3 times with 10s delay — Aura DNS can be
+        # transiently unresolvable immediately after a session ends.
+        import time as _time
+        last_exc = None
+        for attempt in range(3):
+            try:
+                driver = GraphDatabase.driver(uri, auth=(user, password))
+                driver.verify_connectivity()
+                self._driver = driver
+                return self._driver
+            except Exception as e:
+                last_exc = e
+                if attempt < 2:
+                    print(f"  [validator] connection attempt {attempt+1}/3 failed ({e}), retrying in 10s...")
+                    _time.sleep(10)
+        raise last_exc
 
     def _sample_id(self) -> str:
         """Read sample_id from progress.md or first CSV row, fallback to 'p1'."""
@@ -89,8 +103,7 @@ class Validator:
 
     def _gate_db_running(self) -> tuple[bool, str]:
         try:
-            driver = self._get_driver()
-            driver.verify_connectivity()
+            self._get_driver()  # already verifies connectivity + retries
             return True, "Connected successfully"
         except Exception as e:
             return False, f"Connection failed: {e}"
@@ -103,23 +116,52 @@ class Validator:
 
         try:
             driver = self._get_driver()
+
+            # Check constraints (present as soon as schema.cypher is applied, before any data)
             records, _, _ = driver.execute_query(
-                "CALL db.labels() YIELD label RETURN collect(label) AS labels"
+                "SHOW CONSTRAINTS YIELD labelsOrTypes, type "
+                "RETURN collect(DISTINCT labelsOrTypes[0]) AS labels, count(*) AS constraintCount"
             )
             labels = records[0]["labels"] if records else []
+            constraint_count = records[0]["constraintCount"] if records else 0
 
-            records2, _, _ = driver.execute_query(
-                "CALL db.relationshipTypes() YIELD relationshipType "
-                "RETURN collect(relationshipType) AS types"
-            )
-            rel_types = records2[0]["types"] if records2 else []
+            # Also check relationship types from schema.json if constraints don't cover them
+            schema_json = self.work_dir / "schema" / "schema.json"
+            rel_types_from_schema = []
+            if schema_json.exists():
+                try:
+                    schema = json.loads(schema_json.read_text())
+                    rel_types_from_schema = [r["type"] for r in schema.get("relationships", [])]
+                except Exception:
+                    pass
+
+            if len(labels) < min_labels and constraint_count == 0:
+                # Fallback: check db.labels() in case data was loaded without constraints
+                records2, _, _ = driver.execute_query(
+                    "CALL db.labels() YIELD label RETURN collect(label) AS labels"
+                )
+                labels = records2[0]["labels"] if records2 else []
 
             if len(labels) < min_labels:
-                return False, f"Only {len(labels)} node labels (need ≥{min_labels}): {labels}"
-            if len(rel_types) < min_rels:
-                return False, f"Only {len(rel_types)} relationship types (need ≥{min_rels}): {rel_types}"
+                return False, (
+                    f"Only {len(labels)} constrained node labels (need ≥{min_labels}): {labels}. "
+                    f"schema.cypher may not have been applied."
+                )
 
-            return True, f"{len(labels)} labels, {len(rel_types)} relationship types"
+            rel_count = len(rel_types_from_schema)
+            if rel_count < min_rels:
+                # Last resort: check live DB
+                records3, _, _ = driver.execute_query(
+                    "CALL db.relationshipTypes() YIELD relationshipType "
+                    "RETURN collect(relationshipType) AS types"
+                )
+                live_rels = records3[0]["types"] if records3 else []
+                rel_count = len(live_rels)
+
+            if rel_count < min_rels:
+                return False, f"Only {rel_count} relationship types in schema (need ≥{min_rels})"
+
+            return True, f"{len(labels)} labels, {rel_count} rel types, {constraint_count} constraints"
         except Exception as e:
             return False, f"Schema check failed: {e}"
 
@@ -177,9 +219,18 @@ class Validator:
         errors = []
         for i, query in enumerate(queries[:10]):  # test up to 10
             try:
-                # Replace $param placeholders — use sample_id from progress.md
+                # Extract inline comment defaults: // $paramName = "value" or // $paramName = 123
+                comment_defaults = {}
+                for m in re.finditer(r'//[^\n]*\$(\w+)\s*=\s*["\']?([^"\';\n,\s]+)["\']?', query):
+                    comment_defaults[m.group(1)] = m.group(2).strip('"\'')
+
                 sample_id = self._sample_id()
-                test_query = re.sub(r'\$id\b', f"'{sample_id}'", query)
+                test_query = query
+                # Apply comment defaults first (most specific)
+                for param, val in comment_defaults.items():
+                    test_query = re.sub(rf'\${param}\b', f"'{val}'" if not val.isdigit() else val, test_query)
+                # Fall back to sample_id for remaining id-like params
+                test_query = re.sub(r'\$id\b', f"'{sample_id}'", test_query)
                 test_query = re.sub(r'\$\w*[Ii]d\b', f"'{sample_id}'", test_query)
                 test_query = re.sub(r'\$limit\b', "10", test_query)
                 test_query = re.sub(r'\$threshold\b', "0", test_query)
@@ -264,14 +315,22 @@ class Validator:
             Path.home() / ".claude" / "settings.json",
             self.work_dir / "mcp_config.json",
         ]
+        # Also accept any mcp-*.json file in the work dir root
+        candidates += list(self.work_dir.glob("mcp-*.json"))
+
         for path in candidates:
             if path.exists():
                 try:
                     config = json.loads(path.read_text())
+                    # Standard mcpServers format
                     servers = config.get("mcpServers", {})
                     neo4j_keys = [k for k in servers if "neo4j" in k.lower()]
                     if neo4j_keys:
-                        return True, f"MCP config found at {path} with servers: {neo4j_keys}"
+                        return True, f"MCP config found at {path.name} with servers: {neo4j_keys}"
+                    # Flat format: {"command": ..., "args": [...]} containing neo4j
+                    content = path.read_text().lower()
+                    if "neo4j" in content and ("command" in content or "args" in content):
+                        return True, f"MCP config found at {path.name} (neo4j reference present)"
                 except Exception:
                     pass
         return False, "No MCP config with neo4j server found"

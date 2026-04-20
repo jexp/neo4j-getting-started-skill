@@ -1,0 +1,116 @@
+# Persona: Priya — The Compliance Analyst
+# Target completion: ≤15 min autonomous, ≤90 min HITL
+
+persona:
+  id: priya_analyst
+  name: Priya
+  description: "Compliance analyst at a European fintech building a fraud ring detection dashboard
+                for her team. Wants something her non-technical colleagues can use — not a notebook."
+  experience: intermediate
+  background: "4 years Python + pandas, comfortable with SQL and data pipelines, builds Jupyter
+               notebooks for her own analysis but needs a shareable Streamlit app this time.
+               Motivated by a real problem: their SQL-based fraud rules miss coordinated rings
+               because recursive CTEs are too slow and hard to maintain."
+
+inputs:
+  domain: financial services
+  use_case: "transaction fraud ring detection and suspicious account network analysis"
+  experience: intermediate
+  db_target: aura-free
+  data_source: synthetic
+  app_type: streamlit
+  language: python
+  framework: streamlit
+  integration: none
+
+# What the skill should produce
+expected_outputs:
+  files:
+    - .env
+    - schema/schema.json
+    - schema/schema.cypher
+    - schema/reset.cypher
+    - data/generate.py
+    - queries/queries.cypher
+    - app.py
+    - requirements.txt
+    - README.md
+
+  db_state:
+    min_node_labels: 2      # Account + Transaction minimum (PERFORMS/BENEFITS_TO model)
+    min_rel_types: 2        # PERFORMS + BENEFITS_TO minimum
+    min_nodes: 200
+    min_relationships: 400  # transactions are edges — need volume for ring patterns to emerge
+
+  queries:
+    min_count: 5
+    min_returning_results: 3
+    examples:
+      - "Total accounts and transactions in the graph"
+      - "Top 10 accounts by total outbound transaction volume"
+      - "Find transaction rings (cycles of 3–6 hops where funds return to origin account)"
+      - "Find accounts that are involved in more than one ring"
+      - "List all transactions involving a specific account (inbound + outbound)"
+      - "Find the shortest cycle involving a given account"
+      - "Accounts with the highest number of distinct counterparties (fan-out)"
+
+  # Streamlit-specific: what sections the dashboard should have
+  dashboard_sections:
+    - "Metrics row: total accounts, transactions, rings detected"
+    - "Graph visualization: neo4j-viz rendered via st.components.v1.html(vg.render().data, height=500)"
+    - "Ring explorer: ring detection query results as st.dataframe"
+    - "Account drill-down: text input for accountNumber → show full transaction history"
+    - "Risk leaderboard: top accounts by ring involvement or counterparty count"
+
+# Success gates (all must pass)
+success_gates:
+  - id: db_running
+    description: "Can connect to the Neo4j instance"
+    check: "driver.verify_connectivity() does not throw"
+
+  - id: model_valid
+    description: "Schema has ≥2 node labels, ≥2 relationship types, ≥2 constraints"
+    check: "SHOW CONSTRAINTS returns ≥2 constraints"
+
+  - id: data_present
+    description: "Synthetic transaction graph loaded"
+    check: "MATCH (n) RETURN count(n) >= 200"
+
+  - id: queries_work
+    description: "Fraud detection queries return results"
+    check: "At least 3 of 5 queries return ≥1 row"
+
+  - id: graph_visible
+    description: "Browser URL delivered to user"
+    check: "browser_url recorded in progress.md 5-explore section"
+
+  - id: app_generated
+    description: "Streamlit app exists and passes syntax check"
+    check: "python -m py_compile app.py succeeds"
+
+  - id: time_budget
+    description: "Completed within time budget"
+    check: "elapsed <= 1200s"
+
+# Test execution config
+test_config:
+  mode: autonomous
+  timeout_seconds: 1200   # Aura Free + synthetic — no CSV import or MCP complexity
+
+  user_inputs_inject:
+    - prompt: "domain"
+      response: "Financial services — I work in compliance at a fintech, focused on fraud"
+    - prompt: "use.case"
+      response: "Transaction fraud ring detection — finding accounts that cycle money through
+                 networks of intermediaries, the kind of thing SQL recursive CTEs can't handle"
+    - prompt: "experience"
+      response: "Intermediate — I know Python and pandas well, comfortable with SQL,
+                 this is my first graph database"
+    - prompt: "database"
+      response: "Aura Free"
+    - prompt: "data"
+      response: "Generate synthetic data — make it realistic with some actual ring patterns
+                 so the fraud queries return results"
+    - prompt: "build"
+      response: "A Streamlit dashboard my compliance team can use — not a notebook,
+                 something interactive they can run without touching code"

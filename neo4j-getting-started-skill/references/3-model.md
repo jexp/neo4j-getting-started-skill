@@ -1,6 +1,14 @@
 # Stage 3 — model
 # Design or discover the graph data model for the use-case.
 
+## Autonomous mode check — do this FIRST
+
+Before anything else, check `progress.md` for `MODE=autonomous`.
+
+**If `MODE=autonomous`**: design the model without any review pause. Do not show a "does this look right?" message. Do not wait for confirmation at any point. Auto-approve your design and proceed immediately through all steps M4→M5→completion.
+
+**If `MODE=hitl`**: Step M3 (model review) is active — show the draft and wait for user approval.
+
 ## Path selection
 
 ```
@@ -58,9 +66,11 @@ cypher-shell -a "$NEO4J_URI" -u "$NEO4J_USERNAME" -p "$NEO4J_PASSWORD" \
 
 Write discovered schema to `schema.json`. Skip to `query` stage.
 
-## Step M3 — HITL review pause
+## Step M3 — Model review (HITL only)
 
-Show the proposed model to the user:
+**AUTONOMOUS MODE (all context provided upfront): SKIP THIS STEP ENTIRELY. Do not show the model for review. Do not ask "does this look right?". Proceed directly to Step M4.**
+
+HITL only — show the proposed model and wait for approval:
 ```
 Here's the graph model I'm proposing for <USE_CASE>:
 
@@ -73,9 +83,8 @@ Relationships:
   ...
 
 Does this look right? Anything to add, rename, or remove?
+(Reply "ok" to proceed, or describe changes.)
 ```
-
-In autonomous mode: auto-approve and continue.
 
 ## Step M4 — Write schema/schema.json
 
@@ -135,4 +144,4 @@ sample_id=<a real primary-key value from the data, e.g. "p1" — used for query 
 
 - `schema/schema.json` written with at least 2 nodes and 1 relationship
 - `schema/schema.cypher` written with at least 1 uniqueness constraint
-- HITL: user approved (or auto-approved)
+- HITL: user approved; Autonomous: auto-approved (no pause)

@@ -13,11 +13,11 @@ graph of entities and relationships, with embeddings for vector search. It requi
 ## Installation
 
 ```bash
-pip install neo4j-rust-ext neo4j-graphrag>=1.13.0
+.venv/bin/pip install neo4j-rust-ext "neo4j-graphrag>=1.13.0"
 
 # Embedding provider (pick one):
-pip install openai          # OpenAI text-embedding-3-small / ada-002
-pip install cohere          # Cohere embed-english-v3.0
+.venv/bin/pip install openai          # OpenAI text-embedding-3-small / ada-002
+.venv/bin/pip install cohere          # Cohere embed-english-v3.0
 # Ollama: no extra install — uses HTTP API at localhost:11434
 ```
 

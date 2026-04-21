@@ -160,7 +160,12 @@ neo4j-viz>=1.0.0
 
 ## Path B — Streamlit Dashboard
 
-Generate `app.py`:
+**If DATA_SOURCE=documents**: use the GraphRAG chatbot template from
+`${CLAUDE_SKILL_DIR}/references/capabilities/kg-from-documents.md` Step K7 instead of
+the generic dashboard below. The chatbot template uses `VectorCypherRetriever` to ground
+answers in the ingested document chunks.
+
+Generate `app.py` (generic dashboard — for non-documents data sources):
 
 ```python
 import streamlit as st
@@ -351,52 +356,56 @@ Assert `total_nodes > 0` in the response.
 
 ## Path D — GraphRAG Pipeline
 
-Generate `graphrag_app.py`:
+**If DATA_SOURCE=documents**: the full pipeline is already defined in
+`${CLAUDE_SKILL_DIR}/references/capabilities/kg-from-documents.md` (Steps K7/K8).
+Use the Streamlit chatbot template (Step K7) or ToolsRetriever (Step K8) from there.
+
+For a standalone smoke-test script `graphrag_app.py`:
 
 ```python
-from neo4j_graphrag.retrievers import HybridCypherRetriever
+from neo4j_graphrag.retrievers import VectorCypherRetriever
 from neo4j_graphrag.generation import GraphRAG
-from neo4j_graphrag.embeddings import OpenAIEmbeddings  # swap for Cohere/Ollama
+from neo4j_graphrag.embeddings import OpenAIEmbeddings
+from neo4j_graphrag.llm import OpenAILLM
 from neo4j import GraphDatabase
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
-driver = GraphDatabase.driver(
-    os.environ["NEO4J_URI"],
-    auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"])
-)
-embedder = OpenAIEmbeddings(model=os.environ.get("EMBEDDING_MODEL","text-embedding-3-small"))
+driver   = GraphDatabase.driver(os.environ["NEO4J_URI"],
+                                auth=(os.environ["NEO4J_USERNAME"], os.environ["NEO4J_PASSWORD"]))
+embedder = OpenAIEmbeddings(model=os.environ.get("EMBEDDING_MODEL", "text-embedding-3-small"))
+llm      = OpenAILLM(model_name=os.environ.get("LLM_MODEL", "gpt-5.4-mini"))
 
+# SimpleKGPipeline stores entities as :__KGBuilder__ nodes connected via FROM_CHUNK.
+# Always inspect actual schema after ingestion: db.schema.visualization()
 retrieval_query = """
-MATCH (node)<-[:HAS_CHUNK]-(doc:Document)
-OPTIONAL MATCH (node)-[:MENTIONS]->(e:Entity)
-RETURN node.text AS chunk_text, doc.title AS source,
-       collect(DISTINCT e.name) AS entities, score
+OPTIONAL MATCH (entity:__KGBuilder__)-[:FROM_CHUNK]->(node)
+RETURN node.text                            AS chunk_text,
+       collect(DISTINCT entity.name)[..5]   AS entities,
+       score
 ORDER BY score DESC
 """
 
-retriever = HybridCypherRetriever(
+retriever = VectorCypherRetriever(
     driver=driver,
-    vector_index_name="chunk_embeddings",
-    fulltext_index_name="entity_search",
+    index_name="chunk_embeddings",
     retrieval_query=retrieval_query,
     embedder=embedder,
+    neo4j_database=os.environ.get("NEO4J_DATABASE", "neo4j"),
 )
-
 rag = GraphRAG(retriever=retriever, llm=llm)
 
 if __name__ == "__main__":
-    query = f"Tell me about {USE_CASE}"
-    response = rag.search(query_text=query, retriever_config={"top_k": 5})
-    assert response.answer, "GraphRAG returned empty — check embeddings and vector index"
+    query = input("Ask a question: ")
+    response = rag.search(query_text=query, retriever_config={"top_k": 5}, return_context=True)
+    assert response.answer, "GraphRAG returned empty — check embeddings and vector index are ONLINE"
     print(response.answer)
 ```
 
 Add to `requirements.txt`:
 ```
-neo4j-graphrag>=1.13.0
-openai>=1.0.0
+neo4j-graphrag[openai]>=1.13.0
 ```
 
 ## Path E — MCP Integration

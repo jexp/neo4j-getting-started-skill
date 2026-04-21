@@ -1,0 +1,126 @@
+# Persona: Marcus — The Legal Analyst
+# Target completion: ≤25 min autonomous (Aura Free + GraphRAG ingestion + Streamlit chatbot)
+
+persona:
+  id: marcus_legal
+  name: Marcus
+  description: "Legal analyst at a mid-size law firm building a contract investigation tool
+                using a knowledge graph extracted from raw contract text. Wants to ask
+                natural-language questions like 'What termination rights does each party have?'
+                or 'Which agreements require arbitration?' across a corpus of CUAD contracts."
+  experience: intermediate
+  background: "5 years Python + SQL, occasional pandas user, no prior graph database experience.
+               Works with contracts daily but has never built an AI tool before. Motivated by
+               the need to quickly surface key contract clauses without reading every document.
+               Has an OpenAI API key from a prior project."
+
+inputs:
+  domain: legal
+  use_case: "contract investigation — extract clause types (termination, liability, IP ownership,
+             governing law, arbitration) from commercial contracts and answer questions about them
+             using a GraphRAG chatbot"
+  experience: intermediate
+  db_target: aura-free
+  data_source: documents
+  app_type: streamlit
+  language: python
+  embedding_provider: openai
+  embedding_model: text-embedding-3-small
+
+# What the skill should produce
+expected_outputs:
+  files:
+    - .env
+    - schema/schema.json
+    - schema/schema.cypher
+    - schema/reset.cypher
+    - import/ingest_docs.py
+    - queries/queries.cypher
+    - app.py
+    - requirements.txt
+    - README.md
+
+  db_state:
+    min_node_labels: 3      # Chunk + Document + at least one entity type (Party, Clause, etc.)
+    min_rel_types: 1        # NEXT_CHUNK or similar lexical graph relation
+    min_nodes: 50           # 3 contracts → many chunks + entities
+
+  queries:
+    min_count: 5
+    min_returning_results: 2
+    examples:
+      - "List all documents/contracts in the graph"
+      - "Find all chunks mentioning termination or cancellation"
+      - "Entities mentioned across multiple contracts"
+      - "Chunks with their source document names"
+      - "All relationship types between entities"
+
+  # Streamlit GraphRAG chatbot: what the app should do
+  app_behavior:
+    - "Text input for natural-language question about the contracts"
+    - "Calls VectorCypherRetriever to find relevant chunks + related entities"
+    - "Displays the LLM-synthesized answer"
+    - "Shows retrieved source chunks as expandable context"
+
+# Success gates (all must pass)
+success_gates:
+  - id: db_running
+    description: "Can connect to the Aura instance"
+    check: "driver.verify_connectivity() does not throw"
+
+  - id: model_valid
+    description: "Schema has ≥3 node labels, ≥1 relationship type, ≥1 constraint"
+    check: "SHOW CONSTRAINTS returns ≥1 constraint"
+
+  - id: data_present
+    description: "Contract chunks and entities loaded from documents"
+    check: "MATCH (n) RETURN count(n) >= 50"
+
+  - id: queries_work
+    description: "Contract queries return results"
+    check: "At least 2 of 5 queries return ≥1 row"
+
+  - id: graph_visible
+    description: "Browser URL or notebook viz delivered to user"
+    check: "browser_url or viz delivered"
+
+  - id: app_generated
+    description: "Streamlit app.py exists and is valid Python"
+    check: "py_compile on app.py passes"
+
+  - id: time_budget
+    description: "Completed within time budget"
+    check: "elapsed <= 2400s"
+
+# Test execution config
+test_config:
+  mode: autonomous
+  timeout_seconds: 2700   # Aura provisioning (~90s) + GraphRAG ingestion + Streamlit build
+
+  # Runner copies fixture/data/docs/ into work_dir/data/docs/ — contracts live there
+  # fixture_dir is merged into work_dir before Claude starts (same as other fixtures)
+  fixture_dir: "fixtures/marcus_contracts"
+
+  # Runner propagates these keys from aura.env → .env
+  env_passthrough:
+    - OPENAI_API_KEY
+
+  user_inputs_inject:
+    - prompt: "domain"
+      response: "Legal — I work at a law firm reviewing commercial contracts"
+    - prompt: "use.case"
+      response: "Contract investigation — I have 3 CUAD contract text files in data/docs/.
+                 I want to extract key clause types and build a Streamlit chatbot so I can ask
+                 questions like 'What are the termination conditions?' across all contracts at once"
+    - prompt: "experience"
+      response: "Intermediate — comfortable with Python and pandas, never used Neo4j before"
+    - prompt: "database"
+      response: "Aura Free — I want the easiest cloud option"
+    - prompt: "data"
+      response: "I have contract text files already in data/docs/ — please use those to build
+                 the knowledge graph with neo4j-graphrag"
+    - prompt: "build"
+      response: "A Streamlit chatbot where I can type a question about the contracts and get
+                 an answer with source contract clauses shown"
+    - prompt: "openai"
+      response: "Yes, I have an OpenAI API key — it's already in the .env file"

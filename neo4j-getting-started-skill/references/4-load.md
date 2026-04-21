@@ -250,28 +250,135 @@ Adapt the DataFrame source to match:
 
 Always follow **Phase 1 (all nodes) → Phase 2 (all relationships)** regardless of source.
 
-## Path D — Document / GraphRAG pipeline
+## Path D — Document / GraphRAG pipeline (DATA_SOURCE=documents)
 
-Read and follow `${CLAUDE_SKILL_DIR}/references/capabilities/kg-from-documents.md` for the full pipeline.
-Summary:
+**STOP — do NOT generate synthetic data for this path.**
+The user has real documents. Ingest what is already in `data/`.
+Only fall back to synthetic data if the user explicitly says they have no files.
+
+### Step D0 — Inventory data/
+
+```bash
+find data/ -type f | sort
+wc -l data/*   # rough size check
+```
+
+- **Files present** → proceed with ingestion of those files
+- **data/ empty or missing** → stop and ask the user where their documents are;
+  offer to generate synthetic only if they confirm they have no real files
+- **Large files (>500 KB)** → note they will take longer to embed; proceed anyway
+- **PDFs** → set `from_pdf=True` in SimpleKGPipeline and install `pypdf`
+- **Encoding issues** → read with `errors="replace"` and log any decoding problems
+
+### Step D1 — Install dependencies
+
+```bash
+.venv/bin/pip install neo4j-rust-ext "neo4j-graphrag[openai]>=1.13.0" python-dotenv --quiet
+# If PDFs are present:
+# .venv/bin/pip install pypdf --quiet
+```
+
+### Step D2 — Verify .env has LLM and embedding keys
+
+```bash
+grep -E "OPENAI_API_KEY|EMBEDDING_MODEL|LLM_MODEL" .env || echo "⚠ Missing LLM keys in .env"
+```
+
+If `OPENAI_API_KEY` is missing: check `aura.env` and append to `.env`.
+
+### Step D3 — Write and run import/ingest_docs.py
+
+Read and follow `${CLAUDE_SKILL_DIR}/references/capabilities/kg-from-documents.md` for the
+full pipeline template. Key points:
 
 ```python
 from neo4j_graphrag.experimental.pipeline.kg_builder import SimpleKGPipeline
-from neo4j_graphrag.embeddings import OpenAIEmbeddings  # or Cohere, Ollama, etc.
+from neo4j_graphrag.indexes import create_vector_index
 
-embedder = OpenAIEmbeddings(model=EMBEDDING_MODEL)
 pipeline = SimpleKGPipeline(
     llm=llm,
     driver=driver,
     embedder=embedder,
-    entities=["Person", "Organization", "Topic"],  # adapt to domain
-    relations=["MENTIONS", "RELATED_TO"],
+    from_pdf=False,           # set True if .pdf files present
+    neo4j_database=os.environ.get("NEO4J_DATABASE", "neo4j"),
+    schema={
+        "node_types":         NODE_TYPES,       # adapt to domain
+        "relationship_types": RELATIONSHIP_TYPES,
+        "patterns":           PATTERNS,
+    },
+    perform_entity_resolution=True,
 )
-for text in load_documents("./data/docs/"):
-    await pipeline.run_async(text=text)
+
+# Load ALL files found in data/ — .txt, .md, .pdf
+for path in sorted(Path("data/").glob("**/*")):
+    if path.is_file() and path.suffix in (".txt", ".md", ".pdf"):
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace") if path.suffix != ".pdf" else None
+            if path.suffix == ".pdf":
+                await pipeline.run_async(file_path=str(path))
+            else:
+                await pipeline.run_async(text=text)
+            print(f"  ✓ {path.name}")
+        except Exception as e:
+            print(f"  ✗ {path.name}: {e}")   # log and continue — don't abort
+
+# IMPORTANT: SimpleKGPipeline does NOT create the vector index automatically.
+# Always create it explicitly after ingestion using the graphrag library helper.
+create_vector_index(
+    driver,
+    name="chunk_embeddings",
+    label="Chunk",
+    embedding_property="embedding",
+    dimensions=int(os.environ.get("EMBEDDING_DIMENSIONS", "1536")),
+    similarity_fn="cosine",
+    neo4j_database=os.environ.get("NEO4J_DATABASE", "neo4j"),
+)
+print("  ✓ Vector index 'chunk_embeddings' ready")
 ```
 
-After ingestion, create vector and fulltext indexes (from schema.cypher).
+### Messy data — common patterns
+
+| Problem | Symptom | Fix |
+|---------|---------|-----|
+| Mixed encoding | `UnicodeDecodeError` | `open(path, errors="replace")` |
+| Very large files | Slow ingestion | OK — pipeline chunks internally; just wait |
+| Scanned PDFs (no text layer) | Empty chunks | Run OCR first (e.g. `pytesseract`) |
+| Files with boilerplate headers | Low-value entity extraction | Strip headers before passing `text=` |
+| No useful structure | LLM extracts nothing | Try `schema=None` — lets LLM infer types freely |
+
+**IMPORTANT: run ingestion synchronously — do NOT use `&` or background execution.**
+The script must complete and print "✓ Ingestion complete" before the next stage begins.
+LLM-based extraction is slow (minutes for large corpora) — this is expected, just wait.
+
+After ingestion, **always inspect the actual graph schema** before writing queries:
+```cypher
+CYPHER 25
+CALL db.schema.visualization()
+```
+```cypher
+CYPHER 25
+MATCH (n) RETURN labels(n)[0] AS label, count(n) AS cnt ORDER BY cnt DESC
+```
+```cypher
+CYPHER 25
+MATCH ()-[r]->() RETURN type(r) AS rel, count(r) AS cnt ORDER BY cnt DESC
+```
+
+**SimpleKGPipeline entity label note:**
+Extracted entities are stored under `__KGBuilder__` label (not `Entity`, `Party`, etc.).
+The relationship from entity to its source chunk is `FROM_CHUNK` (not `MENTIONS`).
+The relationship from chunk to document is `FROM_DOCUMENT` (not `HAS_CHUNK`).
+
+Use these actual labels when writing the retrieval_query for VectorCypherRetriever:
+```python
+retrieval_query = """
+OPTIONAL MATCH (entity:__KGBuilder__)-[:FROM_CHUNK]->(node)
+RETURN node.text                            AS chunk_text,
+       collect(DISTINCT entity.name)[..5]   AS entities,
+       score
+ORDER BY score DESC
+"""
+```
 
 ## Step L5 — Post-import search indexes
 

@@ -51,6 +51,12 @@ Hi! To get you up and running with Neo4j, I need a few things:
    C) I have CSV files to import
    D) I have a relational database (PostgreSQL / MySQL / other)
    E) I have documents to build a knowledge graph / GraphRAG pipeline
+      (txt, md, pdf — will be ingested via SimpleKGPipeline into data/)
+
+   DATA_SOURCE inference rules:
+   - If the user mentions having files, documents, PDFs, contracts, papers → documents
+   - If files already exist in data/ → documents (even if user didn't say so)
+   - Only use synthetic if the user has NO data and explicitly wants generated examples
 
 6. What do you want to build?
    A) Python notebook (Jupyter / VS Code)

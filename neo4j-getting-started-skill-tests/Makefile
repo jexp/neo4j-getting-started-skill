@@ -9,7 +9,7 @@ TESTS_DIR := $(CURDIR)
 
 .PHONY: install-skill uninstall-skill reinstall-skill \
         test-cypher test-load \
-        integration-alex integration-sam integration-priya integration-elena \
+        integration-alex integration-sam integration-priya integration-elena integration-marcus \
         integration-alex-from-explore \
         test-quick manual help
 
@@ -30,6 +30,7 @@ help:
 	@echo "  make integration-sam     Persona: Sam (developer, e-commerce, FastAPI)"
 	@echo "  make integration-priya   Persona: Priya (compliance analyst, fintech fraud rings, Streamlit)"
 	@echo "  make integration-elena   Persona: Elena (clinical informatics, patient journey, Docker, notebook)"
+	@echo "  make integration-marcus  Persona: Marcus (legal analyst, CUAD contracts, GraphRAG, Streamlit)"
 	@echo ""
 	@echo "Other:"
 	@echo "  make test-quick    Validate skill file structure (no Claude)"
@@ -87,6 +88,12 @@ integration-elena: reinstall-skill
 	@echo "Running integration test: elena_healthcare ..."
 	@echo "(Requires Docker — runner starts/stops neo4j-elena-test container)"
 	python3 $(HARNESS) --persona $(PERSONAS_DIR)/elena_healthcare.yml --verbose
+	@$(MAKE) --no-print-directory uninstall-skill
+
+integration-marcus: reinstall-skill
+	@echo "Running integration test: marcus_legal ..."
+	@echo "(Aura Free + GraphRAG ingestion + Streamlit chatbot — requires OPENAI_API_KEY in aura.env)"
+	python3 $(HARNESS) --persona $(PERSONAS_DIR)/marcus_legal.yml --verbose
 	@$(MAKE) --no-print-directory uninstall-skill
 
 integration-alex-from-explore: reinstall-skill

@@ -594,7 +594,16 @@ def run_persona(persona_path: str, verbose: bool = False, keep_skill: bool = Fal
     print(f"\n[Runner] Starting persona: {persona_id}")
     print(f"[Runner] Work dir: {work_dir}")
 
-    # Copy fixture files first (progress.md, schema/, etc.) if provided
+    # Determine test_config early (needed for fixture_dir resolution and docker detection)
+    tc = persona.get("test_config", {})
+    is_docker = bool(tc.get("docker_db") and persona["inputs"].get("db_target") == "local-docker")
+
+    # Resolve fixture_dir: CLI arg takes priority; fall back to test_config.fixture_dir
+    if fixture_dir is None and tc.get("fixture_dir"):
+        tests_root = Path(__file__).parent.parent
+        fixture_dir = str(tests_root / tc["fixture_dir"])
+
+    # Copy fixture files (progress.md, schema/, data/, etc.) if provided
     if fixture_dir:
         fixture_path = Path(fixture_dir)
         for item in fixture_path.iterdir():
@@ -605,10 +614,6 @@ def run_persona(persona_path: str, verbose: bool = False, keep_skill: bool = Fal
                 shutil.copytree(str(item), str(dest))
         if verbose:
             print(f"[Runner] Copied fixture files from {fixture_path}")
-
-    # Determine whether this is a local-docker run (aura.env not needed for those)
-    tc = persona.get("test_config", {})
-    is_docker = bool(tc.get("docker_db") and persona["inputs"].get("db_target") == "local-docker")
 
     if not is_docker and AURA_ENV_SRC.exists():
         shutil.copy(str(AURA_ENV_SRC), str(work_dir / "aura.env"))
@@ -621,12 +626,18 @@ def run_persona(persona_path: str, verbose: bool = False, keep_skill: bool = Fal
         aura_vars = dotenv_values(AURA_ENV_SRC)
         if aura_vars.get("NEO4J_URI") and aura_vars.get("NEO4J_PASSWORD"):
             dot_env_path = work_dir / ".env"
-            dot_env_path.write_text(
+            env_content = (
                 f"NEO4J_URI={aura_vars['NEO4J_URI']}\n"
                 f"NEO4J_USERNAME={aura_vars.get('NEO4J_USERNAME', 'neo4j')}\n"
                 f"NEO4J_PASSWORD={aura_vars['NEO4J_PASSWORD']}\n"
                 f"NEO4J_DATABASE={aura_vars.get('NEO4J_DATABASE', 'neo4j')}\n"
             )
+            for key in tc.get("env_passthrough", []):
+                if aura_vars.get(key):
+                    env_content += f"{key}={aura_vars[key]}\n"
+                    if verbose:
+                        print(f"[Runner] Passed through {key} from aura.env → .env")
+            dot_env_path.write_text(env_content)
             print(f"[Runner] Pre-populated .env from aura.env (skips provisioning)")
             # Wipe the pre-existing DB so each run starts from a clean slate
             print("[Runner] Wiping pre-existing database for clean test run...")

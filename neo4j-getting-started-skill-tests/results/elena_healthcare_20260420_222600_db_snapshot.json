@@ -1,0 +1,588 @@
+{
+  "node_counts": [
+    {
+      "label": "Encounter",
+      "count": 502
+    },
+    {
+      "label": "Patient",
+      "count": 100
+    },
+    {
+      "label": "CareGap",
+      "count": 78
+    },
+    {
+      "label": "Provider",
+      "count": 20
+    },
+    {
+      "label": "Condition",
+      "count": 15
+    },
+    {
+      "label": "Medication",
+      "count": 15
+    },
+    {
+      "label": "Organization",
+      "count": 10
+    }
+  ],
+  "rel_counts": [
+    {
+      "type": "DIAGNOSED",
+      "count": 861
+    },
+    {
+      "type": "HAD_ENCOUNTER",
+      "count": 502
+    },
+    {
+      "type": "WITH_PROVIDER",
+      "count": 502
+    },
+    {
+      "type": "AT_ORGANIZATION",
+      "count": 502
+    },
+    {
+      "type": "PRESCRIBED",
+      "count": 473
+    },
+    {
+      "type": "HAS_CONDITION",
+      "count": 257
+    },
+    {
+      "type": "HAS_CARE_GAP",
+      "count": 78
+    },
+    {
+      "type": "REFERRED_TO",
+      "count": 72
+    },
+    {
+      "type": "WORKS_AT",
+      "count": 20
+    }
+  ],
+  "constraints": [
+    {
+      "name": "caregap_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "CareGap"
+      ],
+      "properties": [
+        "id"
+      ]
+    },
+    {
+      "name": "condition_icd10",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Condition"
+      ],
+      "properties": [
+        "icd10"
+      ]
+    },
+    {
+      "name": "encounter_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Encounter"
+      ],
+      "properties": [
+        "id"
+      ]
+    },
+    {
+      "name": "medication_rxnorm",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Medication"
+      ],
+      "properties": [
+        "rxnorm"
+      ]
+    },
+    {
+      "name": "org_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Organization"
+      ],
+      "properties": [
+        "id"
+      ]
+    },
+    {
+      "name": "patient_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Patient"
+      ],
+      "properties": [
+        "id"
+      ]
+    },
+    {
+      "name": "provider_npi",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Provider"
+      ],
+      "properties": [
+        "npi"
+      ]
+    }
+  ],
+  "sample_nodes": {
+    "Patient": [
+      {
+        "zipCode": 10003,
+        "gender": "M",
+        "dob": "1996-04-03",
+        "name": "Ava Brown",
+        "id": "pat0001"
+      },
+      {
+        "zipCode": 77001,
+        "gender": "M",
+        "dob": "1950-05-26",
+        "name": "Dorothy Martin",
+        "id": "pat0002"
+      },
+      {
+        "zipCode": 94102,
+        "gender": "F",
+        "dob": "1976-07-01",
+        "name": "Joseph Taylor",
+        "id": "pat0003"
+      },
+      {
+        "zipCode": 94102,
+        "gender": "Other",
+        "dob": "1946-05-05",
+        "name": "Liam Brown",
+        "id": "pat0004"
+      },
+      {
+        "zipCode": 90210,
+        "gender": "M",
+        "dob": "1952-12-23",
+        "name": "Emma Hernandez",
+        "id": "pat0005"
+      },
+      {
+        "zipCode": 90210,
+        "gender": "Other",
+        "dob": "1974-02-12",
+        "name": "Joseph Smith",
+        "id": "pat0006"
+      },
+      {
+        "zipCode": 90210,
+        "gender": "Other",
+        "dob": "1969-02-02",
+        "name": "Thomas Brown",
+        "id": "pat0007"
+      },
+      {
+        "zipCode": 10003,
+        "gender": "M",
+        "dob": "1947-06-17",
+        "name": "Thomas Martin",
+        "id": "pat0008"
+      },
+      {
+        "zipCode": 30301,
+        "gender": "M",
+        "dob": "1978-02-09",
+        "name": "Sarah Taylor",
+        "id": "pat0009"
+      },
+      {
+        "zipCode": 90210,
+        "gender": "F",
+        "dob": "1980-08-24",
+        "name": "James Brown",
+        "id": "pat0010"
+      }
+    ],
+    "Encounter": [
+      {
+        "date": "2025-07-15",
+        "reason": "Acute complaint",
+        "durationMinutes": 15,
+        "notes": "Patient seen for acute complaint.",
+        "id": "enc00001",
+        "type": "Emergency"
+      },
+      {
+        "date": "2025-10-18",
+        "reason": "Annual wellness exam",
+        "durationMinutes": 42,
+        "notes": "Patient seen for annual wellness exam.",
+        "id": "enc00002",
+        "type": "Follow-up"
+      },
+      {
+        "date": "2024-08-18",
+        "reason": "Chronic disease follow-up",
+        "durationMinutes": 21,
+        "notes": "Patient seen for chronic disease follow-up.",
+        "id": "enc00003",
+        "type": "Telehealth"
+      },
+      {
+        "date": "2024-09-16",
+        "reason": "Specialist consultation",
+        "durationMinutes": 29,
+        "notes": "Patient seen for specialist consultation.",
+        "id": "enc00004",
+        "type": "Follow-up"
+      },
+      {
+        "date": "2025-05-23",
+        "reason": "Lab review",
+        "durationMinutes": 20,
+        "notes": "Patient seen for lab review.",
+        "id": "enc00005",
+        "type": "Emergency"
+      },
+      {
+        "date": "2026-01-24",
+        "reason": "Acute complaint",
+        "durationMinutes": 30,
+        "notes": "Patient seen for acute complaint.",
+        "id": "enc00006",
+        "type": "Emergency"
+      },
+      {
+        "date": "2024-06-05",
+        "reason": "Annual wellness exam",
+        "durationMinutes": 20,
+        "notes": "Patient seen for annual wellness exam.",
+        "id": "enc00007",
+        "type": "Inpatient"
+      },
+      {
+        "date": "2024-09-25",
+        "reason": "Lab review",
+        "durationMinutes": 88,
+        "notes": "Patient seen for lab review.",
+        "id": "enc00008",
+        "type": "Inpatient"
+      },
+      {
+        "date": "2024-11-24",
+        "reason": "Chronic disease follow-up",
+        "durationMinutes": 73,
+        "notes": "Patient seen for chronic disease follow-up.",
+        "id": "enc00009",
+        "type": "Follow-up"
+      },
+      {
+        "date": "2024-08-25",
+        "reason": "Annual wellness exam",
+        "durationMinutes": 54,
+        "notes": "Patient seen for annual wellness exam.",
+        "id": "enc00010",
+        "type": "Inpatient"
+      }
+    ],
+    "Condition": [
+      {
+        "name": "Type 2 Diabetes Mellitus",
+        "category": "Endocrine",
+        "icd10": "E11.9"
+      },
+      {
+        "name": "Essential Hypertension",
+        "category": "Cardiovascular",
+        "icd10": "I10"
+      },
+      {
+        "name": "Asthma, uncomplicated",
+        "category": "Respiratory",
+        "icd10": "J45.909"
+      },
+      {
+        "name": "Major Depressive Disorder",
+        "category": "Mental Health",
+        "icd10": "F32.9"
+      },
+      {
+        "name": "Low Back Pain",
+        "category": "Musculoskeletal",
+        "icd10": "M54.5"
+      },
+      {
+        "name": "Hyperlipidemia",
+        "category": "Endocrine",
+        "icd10": "E78.5"
+      },
+      {
+        "name": "Atherosclerotic Heart Disease",
+        "category": "Cardiovascular",
+        "icd10": "I25.10"
+      },
+      {
+        "name": "GERD with esophagitis",
+        "category": "Gastrointestinal",
+        "icd10": "K21.0"
+      },
+      {
+        "name": "Acute URI",
+        "category": "Respiratory",
+        "icd10": "J06.9"
+      },
+      {
+        "name": "Chronic Kidney Disease stage 3",
+        "category": "Renal",
+        "icd10": "N18.3"
+      }
+    ],
+    "Provider": [
+      {
+        "specialty": "Psychiatry",
+        "npi": "NPI0000001",
+        "name": "Dr. Noah Anderson"
+      },
+      {
+        "specialty": "Orthopedics",
+        "npi": "NPI0000002",
+        "name": "Dr. Richard Williams"
+      },
+      {
+        "specialty": "Orthopedics",
+        "npi": "NPI0000003",
+        "name": "Dr. Lucas Martin"
+      },
+      {
+        "specialty": "Pulmonology",
+        "npi": "NPI0000004",
+        "name": "Dr. Michael Williams"
+      },
+      {
+        "specialty": "Internal Medicine",
+        "npi": "NPI0000005",
+        "name": "Dr. Emma Martinez"
+      },
+      {
+        "specialty": "Family Medicine",
+        "npi": "NPI0000006",
+        "name": "Dr. Ava Brown"
+      },
+      {
+        "specialty": "Nephrology",
+        "npi": "NPI0000007",
+        "name": "Dr. Joseph Lopez"
+      },
+      {
+        "specialty": "Cardiology",
+        "npi": "NPI0000008",
+        "name": "Dr. Susan Miller"
+      },
+      {
+        "specialty": "Psychiatry",
+        "npi": "NPI0000009",
+        "name": "Dr. Karen Garcia"
+      },
+      {
+        "specialty": "Orthopedics",
+        "npi": "NPI0000010",
+        "name": "Dr. Jennifer Anderson"
+      }
+    ],
+    "Organization": [
+      {
+        "city": "Los Angeles",
+        "name": "New York Hospital",
+        "id": "org001",
+        "type": "Specialty Clinic"
+      },
+      {
+        "city": "Phoenix",
+        "name": "Los Angeles Primary Care Clinic",
+        "id": "org002",
+        "type": "Hospital"
+      },
+      {
+        "city": "New York",
+        "name": "New York Urgent Care",
+        "id": "org003",
+        "type": "Hospital"
+      },
+      {
+        "city": "Phoenix",
+        "name": "New York Primary Care Clinic",
+        "id": "org004",
+        "type": "Primary Care Clinic"
+      },
+      {
+        "city": "Phoenix",
+        "name": "Phoenix Hospital",
+        "id": "org005",
+        "type": "Primary Care Clinic"
+      },
+      {
+        "city": "Phoenix",
+        "name": "Houston Primary Care Clinic",
+        "id": "org006",
+        "type": "Urgent Care"
+      },
+      {
+        "city": "Houston",
+        "name": "Chicago Hospital",
+        "id": "org007",
+        "type": "Primary Care Clinic"
+      },
+      {
+        "city": "Los Angeles",
+        "name": "Chicago Specialty Clinic",
+        "id": "org008",
+        "type": "Primary Care Clinic"
+      },
+      {
+        "city": "Houston",
+        "name": "Chicago Hospital",
+        "id": "org009",
+        "type": "Hospital"
+      },
+      {
+        "city": "Phoenix",
+        "name": "New York Specialty Clinic",
+        "id": "org010",
+        "type": "Specialty Clinic"
+      }
+    ],
+    "Medication": [
+      {
+        "form": "tablet",
+        "rxnorm": 860975,
+        "name": "Metformin 500mg"
+      },
+      {
+        "form": "tablet",
+        "rxnorm": 429503,
+        "name": "Lisinopril 10mg"
+      },
+      {
+        "form": "tablet",
+        "rxnorm": 1049502,
+        "name": "Atorvastatin 20mg"
+      },
+      {
+        "form": "inhaler",
+        "rxnorm": 213269,
+        "name": "Albuterol inhaler"
+      },
+      {
+        "form": "tablet",
+        "rxnorm": 308460,
+        "name": "Sertraline 50mg"
+      },
+      {
+        "form": "tablet",
+        "rxnorm": 866429,
+        "name": "Amlodipine 5mg"
+      },
+      {
+        "form": "capsule",
+        "rxnorm": 617312,
+        "name": "Omeprazole 20mg"
+      },
+      {
+        "form": "tablet",
+        "rxnorm": 835585,
+        "name": "Losartan 50mg"
+      },
+      {
+        "form": "tablet",
+        "rxnorm": 562515,
+        "name": "Levothyroxine 50mcg"
+      },
+      {
+        "form": "tablet",
+        "rxnorm": 1049574,
+        "name": "Aspirin 81mg"
+      }
+    ],
+    "CareGap": [
+      {
+        "dueDate": "2026-04-20",
+        "description": "Annual HbA1c not completed in past 12 months",
+        "id": "gap0001",
+        "type": "DIABETES_A1C",
+        "status": "open"
+      },
+      {
+        "dueDate": "2026-04-20",
+        "description": "Blood pressure not recorded in past 6 months",
+        "id": "gap0002",
+        "type": "HYPERTENSION_BP",
+        "status": "resolved"
+      },
+      {
+        "dueDate": "2026-04-20",
+        "description": "Annual HbA1c not completed in past 12 months",
+        "id": "gap0003",
+        "type": "DIABETES_A1C",
+        "status": "open"
+      },
+      {
+        "dueDate": "2026-04-20",
+        "description": "Blood pressure not recorded in past 6 months",
+        "id": "gap0004",
+        "type": "HYPERTENSION_BP",
+        "status": "open"
+      },
+      {
+        "dueDate": "2026-04-20",
+        "description": "Annual eGFR not checked for CKD patient",
+        "id": "gap0005",
+        "type": "KIDNEY_FUNCTION",
+        "status": "open"
+      },
+      {
+        "dueDate": "2026-04-20",
+        "description": "Annual HbA1c not completed in past 12 months",
+        "id": "gap0006",
+        "type": "DIABETES_A1C",
+        "status": "resolved"
+      },
+      {
+        "dueDate": "2026-04-20",
+        "description": "Blood pressure not recorded in past 6 months",
+        "id": "gap0007",
+        "type": "HYPERTENSION_BP",
+        "status": "open"
+      },
+      {
+        "dueDate": "2026-04-20",
+        "description": "Annual eGFR not checked for CKD patient",
+        "id": "gap0008",
+        "type": "KIDNEY_FUNCTION",
+        "status": "open"
+      },
+      {
+        "dueDate": "2026-04-20",
+        "description": "Annual influenza vaccine not administered",
+        "id": "gap0009",
+        "type": "FLU_VACCINE",
+        "status": "open"
+      },
+      {
+        "dueDate": "2026-04-20",
+        "description": "Annual eGFR not checked for CKD patient",
+        "id": "gap0010",
+        "type": "KIDNEY_FUNCTION",
+        "status": "open"
+      }
+    ]
+  }
+}

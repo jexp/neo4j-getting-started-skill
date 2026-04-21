@@ -1,0 +1,47 @@
+product_id,name,sku,price,category,stock_quantity
+prod1,Wireless Headphones,SKU-0001,195.42,Electronics,12
+prod2,USB-C Hub,SKU-0002,225.04,Electronics,125
+prod3,Mechanical Keyboard,SKU-0003,74.72,Electronics,377
+prod4,Webcam HD,SKU-0004,39.71,Electronics,379
+prod5,LED Desk Lamp,SKU-0005,268.72,Electronics,44
+prod6,Phone Stand,SKU-0006,181.23,Electronics,16
+prod7,Bluetooth Speaker,SKU-0007,18.63,Electronics,111
+prod8,Smart Watch,SKU-0008,77.46,Electronics,308
+prod9,Python Deep Dive,SKU-0009,17.69,Books,101
+prod10,Graph Databases,SKU-0010,217.64,Books,359
+prod11,Clean Code,SKU-0011,168.02,Books,112
+prod12,The Pragmatic Programmer,SKU-0012,140.26,Books,142
+prod13,Designing Data-Intensive Apps,SKU-0013,244.72,Books,3
+prod14,Domain-Driven Design,SKU-0014,230.04,Books,81
+prod15,Running Shoes,SKU-0015,212.45,Clothing,174
+prod16,Merino Wool Sweater,SKU-0016,90.57,Clothing,110
+prod17,Waterproof Jacket,SKU-0017,287.58,Clothing,172
+prod18,Cargo Pants,SKU-0018,39.63,Clothing,194
+prod19,Cotton T-Shirt,SKU-0019,38.04,Clothing,433
+prod20,Wool Socks,SKU-0020,109.74,Clothing,135
+prod21,Coffee Maker,SKU-0021,244.06,Home & Garden,373
+prod22,Air Purifier,SKU-0022,143.22,Home & Garden,63
+prod23,Bamboo Cutting Board,SKU-0023,292.19,Home & Garden,193
+prod24,Cast Iron Pan,SKU-0024,32.84,Home & Garden,150
+prod25,Herb Garden Kit,SKU-0025,250.52,Home & Garden,316
+prod26,LED Grow Light,SKU-0026,266.77,Home & Garden,185
+prod27,Yoga Mat,SKU-0027,177.42,Sports,360
+prod28,Resistance Bands,SKU-0028,30.16,Sports,338
+prod29,Pull-up Bar,SKU-0029,76.08,Sports,148
+prod30,Foam Roller,SKU-0030,295.7,Sports,437
+prod31,Jump Rope,SKU-0031,77.5,Sports,51
+prod32,Water Bottle,SKU-0032,120.23,Sports,232
+prod33,Face Moisturizer,SKU-0033,194.34,Beauty,186
+prod34,Vitamin C Serum,SKU-0034,57.16,Beauty,181
+prod35,Bamboo Toothbrush,SKU-0035,70.75,Beauty,136
+prod36,Shampoo Bar,SKU-0036,213.52,Beauty,349
+prod37,Lip Balm,SKU-0037,197.92,Beauty,311
+prod38,Building Blocks,SKU-0038,194.13,Toys,273
+prod39,Science Kit,SKU-0039,221.44,Toys,83
+prod40,Puzzle 1000pc,SKU-0040,144.05,Toys,138
+prod41,Board Game,SKU-0041,296.95,Toys,327
+prod42,Organic Coffee Beans,SKU-0042,209.56,Food,112
+prod43,Green Tea Sampler,SKU-0043,208.53,Food,431
+prod44,Protein Powder,SKU-0044,232.8,Food,28
+prod45,Dark Chocolate Box,SKU-0045,76.41,Food,16
+prod46,Olive Oil,SKU-0046,243.45,Food,205

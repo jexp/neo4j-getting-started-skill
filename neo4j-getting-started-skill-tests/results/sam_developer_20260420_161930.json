@@ -1,0 +1,60 @@
+{
+  "persona_id": "sam_developer",
+  "started_at": "2026-04-20T16:12:30.853126",
+  "ended_at": "2026-04-20T16:19:28.717078",
+  "total_seconds": 417.83500480651855,
+  "passed": false,
+  "gate_summary": "2/8 gates passed",
+  "gates": [
+    {
+      "id": "db_running",
+      "passed": true,
+      "message": "Connected successfully",
+      "elapsed_ms": 553
+    },
+    {
+      "id": "model_valid",
+      "passed": false,
+      "message": "Only 0 constrained node labels (need \u22653): []. schema.cypher may not have been applied.",
+      "elapsed_ms": 698
+    },
+    {
+      "id": "data_present",
+      "passed": false,
+      "message": "Only 0 nodes (need \u2265100)",
+      "elapsed_ms": 132
+    },
+    {
+      "id": "queries_work",
+      "passed": false,
+      "message": "queries/queries.cypher not found",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "graph_visible",
+      "passed": false,
+      "message": "No browser_url found in progress.md (5-explore section)",
+      "elapsed_ms": 2
+    },
+    {
+      "id": "app_generated",
+      "passed": false,
+      "message": "None of ['main.py'] found in work dir",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "mcp_configured",
+      "passed": false,
+      "message": "No MCP config with neo4j server found",
+      "elapsed_ms": 1
+    },
+    {
+      "id": "time_budget",
+      "passed": true,
+      "message": "417.8s / 1500s limit",
+      "elapsed_ms": 0
+    }
+  ],
+  "work_dir": "/var/folders/4z/831gnw5s78dd39__rqzkh4080000gp/T/neo4j_skill_sam_developer_wz0btmbk",
+  "progress_md": "# Neo4j Getting-Started \u2014 Progress\n<!-- Resume: grep for \"status: pending\" to find the next stage -->\n\n### 0-prerequisites\nstatus: done\nPYTHON=/opt/homebrew/bin/python3.13\nNEO4J_MCP=/Users/mh/bin/neo4j-mcp\n\n### 1-context\nstatus: done\nMODE=hitl\nDOMAIN=ecommerce\nUSE_CASE=product recommendations and customer behavior analysis\nEXPERIENCE=intermediate\nDB_TARGET=aura-pro\nDATA_SOURCE=csv\nAPP_TYPE=fastapi\nEXEC_METHOD=mcp\nCLOUD_PROVIDER=aws\nREGION_HINT=europe-west\n"
+}

@@ -31,13 +31,13 @@ from typing import List, Optional
 import yaml
 
 SKILL_NAME = "neo4j-getting-started-skill"
-SKILL_SRC = Path(__file__).parent.parent.parent          # the neo4j-getting-started-skill/ folder
+REPO_ROOT = Path(__file__).parent.parent.parent           # repo root
+SKILL_SRC = REPO_ROOT / "neo4j-getting-started-skill"    # the skill folder
 SKILL_INSTALL_DIR = Path.home() / ".claude" / "skills" / SKILL_NAME
 RESULTS_DIR = Path(__file__).parent.parent / "results"
 
-# aura.env lives one level above the skill folder (repo root).
-# Copy it into each temp work dir so the skill can find Aura API credentials.
-AURA_ENV_SRC = SKILL_SRC.parent / "aura.env"
+# aura.env lives at the repo root
+AURA_ENV_SRC = REPO_ROOT / "aura.env"
 
 
 @dataclass
@@ -314,7 +314,6 @@ def build_initial_prompt(persona: dict) -> str:
 
     parts.append(f"app: {inputs['app_type']} in {inputs.get('language', 'python')},")
     parts.append(f"integration: {inputs.get('integration', 'none')}.")
-    parts.append("Please guide me through the complete getting-started process.")
 
     return " ".join(parts)
 

@@ -1,0 +1,54 @@
+{
+  "persona_id": "sam_developer",
+  "started_at": "2026-04-20T15:18:46.568556",
+  "ended_at": "2026-04-20T15:38:46.629959",
+  "total_seconds": 1200.0404357910156,
+  "passed": false,
+  "gate_summary": "6/7 gates passed",
+  "gates": [
+    {
+      "id": "db_running",
+      "passed": true,
+      "message": "Connected successfully",
+      "elapsed_ms": 453
+    },
+    {
+      "id": "model_valid",
+      "passed": true,
+      "message": "5 labels, 7 rel types, 5 constraints",
+      "elapsed_ms": 110
+    },
+    {
+      "id": "data_present",
+      "passed": true,
+      "message": "941 nodes present",
+      "elapsed_ms": 101
+    },
+    {
+      "id": "queries_work",
+      "passed": true,
+      "message": "8/14 queries return results",
+      "elapsed_ms": 1473
+    },
+    {
+      "id": "app_generated",
+      "passed": true,
+      "message": "main.py generated and valid",
+      "elapsed_ms": 101
+    },
+    {
+      "id": "mcp_configured",
+      "passed": true,
+      "message": "MCP config found at mcp-claude-desktop.json with servers: ['neo4j-ecommerce']",
+      "elapsed_ms": 1
+    },
+    {
+      "id": "time_budget",
+      "passed": false,
+      "message": "1200.0s / 1200s limit",
+      "elapsed_ms": 0
+    }
+  ],
+  "work_dir": "/var/folders/4z/831gnw5s78dd39__rqzkh4080000gp/T/neo4j_skill_sam_developer_fps3s31j",
+  "progress_md": "# Neo4j Getting-Started \u2014 Progress\n<!-- Resume: grep for \"status: pending\" to find the next stage -->\n\n### 0-prerequisites\nstatus: done\nPYTHON=/opt/homebrew/bin/python3.13\nNEO4J_MCP=/Users/mh/bin/neo4j-mcp\n\n### 1-context\nstatus: done\nMODE=autonomous\nDOMAIN=ecommerce\nUSE_CASE=product recommendations and customer behavior analysis\nEXPERIENCE=intermediate\nDB_TARGET=aura-pro\nDATA_SOURCE=csv\nAPP_TYPE=fastapi\nINTEGRATION=mcp\nLANGUAGE=python\nEXEC_METHOD=cypher-shell\n\n### 2-provision\nstatus: done\nNEO4J_URI=neo4j+s://1931831c.databases.neo4j.io\nNEO4J_USERNAME=neo4j\nNEO4J_DATABASE=neo4j\nINSTANCE_ID=1931831c\nfiles=scripts/provision_aura.py\n\n### 3-model\nstatus: done\nlabels=Customer,Product,Category,Order,Review\nrelationships=PLACED,CONTAINS,VIEWED,WROTE,REVIEWS,BELONGS_TO,SUBCATEGORY_OF\nconstraints=5\nfiles=schema/schema.json,schema/schema.cypher\nsample_id=cust0001\n\n### 4-load\nstatus: done\nnodes=200 Customer, 502 Order, 199 Review, 30 Product, 10 Category\nrelationships=1833 VIEWED, 1271 CONTAINS, 502 PLACED, 199 WROTE, 199 REVIEWS, 30 BELONGS_TO, 5 SUBCATEGORY_OF\nfiles=data/generate.py,data/import.py,schema/reset.cypher\nsample_id=cust0001\n\n### 5-explore\nstatus: done\nbrowser_url=https://browser.neo4j.io/?connectURL=neo4j%2Bs%3A%2F%2Fneo4j%401931831c.databases.neo4j.io\nviz_method=browser\n\n### 6-query\nstatus: done\nqueries_total=14\ntraversal_queries=10\nqueries_returning_rows=14\nfiles=queries/queries.cypher\n\n### 7-build\nstatus: done\nartifact=main.py\napp_type=fastapi+mcp\nrun_command=uvicorn main:app --reload\nfiles=main.py,requirements.txt,mcp-claude-code.json,mcp-claude-desktop.json\n"
+}

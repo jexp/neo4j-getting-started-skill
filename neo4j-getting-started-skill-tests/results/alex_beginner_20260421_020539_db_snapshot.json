@@ -1,0 +1,304 @@
+{
+  "node_counts": [
+    {
+      "label": "Person",
+      "count": 200
+    },
+    {
+      "label": "Post",
+      "count": 100
+    },
+    {
+      "label": "Hashtag",
+      "count": 20
+    },
+    {
+      "label": "Community",
+      "count": 10
+    }
+  ],
+  "rel_counts": [
+    {
+      "type": "FOLLOWS",
+      "count": 2800
+    },
+    {
+      "type": "LIKED",
+      "count": 780
+    },
+    {
+      "type": "MEMBER_OF",
+      "count": 269
+    },
+    {
+      "type": "TAGGED",
+      "count": 197
+    },
+    {
+      "type": "POSTED",
+      "count": 100
+    }
+  ],
+  "constraints": [
+    {
+      "name": "community_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Community"
+      ],
+      "properties": [
+        "id"
+      ]
+    },
+    {
+      "name": "hashtag_name",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Hashtag"
+      ],
+      "properties": [
+        "name"
+      ]
+    },
+    {
+      "name": "post_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Post"
+      ],
+      "properties": [
+        "id"
+      ]
+    }
+  ],
+  "sample_nodes": {
+    "Post": [
+      {
+        "createdAt": "2024-10-07T19:00:00.000000000+00:00",
+        "id": "post1",
+        "content": "Just discovered fashion \u2014 amazing stuff!",
+        "likes": 409
+      },
+      {
+        "createdAt": "2024-07-18T00:00:00.000000000+00:00",
+        "id": "post2",
+        "content": "New post about travel is up!",
+        "likes": 282
+      },
+      {
+        "createdAt": "2023-04-27T14:00:00.000000000+00:00",
+        "id": "post3",
+        "content": "Can't stop thinking about gaming lately.",
+        "likes": 484
+      },
+      {
+        "createdAt": "2023-10-26T16:00:00.000000000+00:00",
+        "id": "post4",
+        "content": "What do you all think about music?",
+        "likes": 361
+      },
+      {
+        "createdAt": "2024-04-28T07:00:00.000000000+00:00",
+        "id": "post5",
+        "content": "What do you all think about food?",
+        "likes": 233
+      },
+      {
+        "createdAt": "2023-07-15T19:00:00.000000000+00:00",
+        "id": "post6",
+        "content": "Sharing some thoughts on science today.",
+        "likes": 260
+      },
+      {
+        "createdAt": "2024-02-29T10:00:00.000000000+00:00",
+        "id": "post7",
+        "content": "New post about sports is up!",
+        "likes": 478
+      },
+      {
+        "createdAt": "2023-10-17T23:00:00.000000000+00:00",
+        "id": "post8",
+        "content": "Just discovered science \u2014 amazing stuff!",
+        "likes": 152
+      },
+      {
+        "createdAt": "2023-06-02T14:00:00.000000000+00:00",
+        "id": "post9",
+        "content": "What do you all think about art?",
+        "likes": 275
+      },
+      {
+        "createdAt": "2024-07-19T17:00:00.000000000+00:00",
+        "id": "post10",
+        "content": "Hot take: fashion is overrated.",
+        "likes": 193
+      }
+    ],
+    "Hashtag": [
+      {
+        "name": "python"
+      },
+      {
+        "name": "graphdb"
+      },
+      {
+        "name": "neo4j"
+      },
+      {
+        "name": "tech"
+      },
+      {
+        "name": "travel"
+      },
+      {
+        "name": "food"
+      },
+      {
+        "name": "music"
+      },
+      {
+        "name": "sports"
+      },
+      {
+        "name": "photography"
+      },
+      {
+        "name": "gaming"
+      }
+    ],
+    "Community": [
+      {
+        "createdAt": "2023-11-17",
+        "name": "Tech Enthusiasts",
+        "topic": "Technology",
+        "id": "c1"
+      },
+      {
+        "createdAt": "2023-08-15",
+        "name": "Music Lovers",
+        "topic": "Music",
+        "id": "c2"
+      },
+      {
+        "createdAt": "2023-01-27",
+        "name": "Sports Fans",
+        "topic": "Sports",
+        "id": "c3"
+      },
+      {
+        "createdAt": "2023-04-15",
+        "name": "World Travelers",
+        "topic": "Travel",
+        "id": "c4"
+      },
+      {
+        "createdAt": "2023-05-17",
+        "name": "Foodies Unite",
+        "topic": "Food",
+        "id": "c5"
+      },
+      {
+        "createdAt": "2023-10-09",
+        "name": "Photo Community",
+        "topic": "Photography",
+        "id": "c6"
+      },
+      {
+        "createdAt": "2023-03-09",
+        "name": "Game Masters",
+        "topic": "Gaming",
+        "id": "c7"
+      },
+      {
+        "createdAt": "2023-05-28",
+        "name": "Fashion Forward",
+        "topic": "Fashion",
+        "id": "c8"
+      },
+      {
+        "createdAt": "2023-08-13",
+        "name": "Science Nerds",
+        "topic": "Science",
+        "id": "c9"
+      },
+      {
+        "createdAt": "2023-12-24",
+        "name": "Art Collective",
+        "topic": "Art",
+        "id": "c10"
+      }
+    ],
+    "Person": [
+      {
+        "city": "Sydney",
+        "joinedAt": "2024-10-16",
+        "name": "Morgan Smith",
+        "id": "p1",
+        "age": 65
+      },
+      {
+        "city": "New York",
+        "joinedAt": "2023-09-08",
+        "name": "Quinn Jones",
+        "id": "p2",
+        "age": 65
+      },
+      {
+        "city": "Toronto",
+        "joinedAt": "2024-11-23",
+        "name": "Skyler Williams",
+        "id": "p3",
+        "age": 55
+      },
+      {
+        "city": "Tokyo",
+        "joinedAt": "2023-02-02",
+        "name": "Alex Williams",
+        "id": "p4",
+        "age": 31
+      },
+      {
+        "city": "Tokyo",
+        "joinedAt": "2024-06-01",
+        "name": "Harley Smith",
+        "id": "p5",
+        "age": 53
+      },
+      {
+        "city": "Singapore",
+        "joinedAt": "2024-10-27",
+        "name": "Skyler White",
+        "id": "p6",
+        "age": 32
+      },
+      {
+        "city": "Toronto",
+        "joinedAt": "2024-08-26",
+        "name": "Cameron Smith",
+        "id": "p7",
+        "age": 28
+      },
+      {
+        "city": "Paris",
+        "joinedAt": "2023-12-15",
+        "name": "Cameron Jones",
+        "id": "p8",
+        "age": 31
+      },
+      {
+        "city": "Paris",
+        "joinedAt": "2023-04-15",
+        "name": "Taylor Jackson",
+        "id": "p9",
+        "age": 24
+      },
+      {
+        "city": "Singapore",
+        "joinedAt": "2023-12-19",
+        "name": "Harley Martinez",
+        "id": "p10",
+        "age": 20
+      }
+    ]
+  }
+}

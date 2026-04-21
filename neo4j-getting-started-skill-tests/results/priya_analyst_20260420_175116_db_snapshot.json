@@ -1,0 +1,420 @@
+{
+  "node_counts": [
+    {
+      "label": "Transaction",
+      "count": 1310
+    },
+    {
+      "label": "Account",
+      "count": 200
+    },
+    {
+      "label": "Phone",
+      "count": 60
+    },
+    {
+      "label": "Device",
+      "count": 50
+    },
+    {
+      "label": "IPAddress",
+      "count": 40
+    }
+  ],
+  "rel_counts": [
+    {
+      "type": "VIA",
+      "count": 1316
+    },
+    {
+      "type": "PERFORMS",
+      "count": 1310
+    },
+    {
+      "type": "BENEFITS_TO",
+      "count": 1310
+    },
+    {
+      "type": "FROM_IP",
+      "count": 794
+    },
+    {
+      "type": "USES_PHONE",
+      "count": 200
+    }
+  ],
+  "constraints": [
+    {
+      "name": "device_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Device"
+      ],
+      "properties": [
+        "deviceId"
+      ]
+    },
+    {
+      "name": "ip_address",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "IPAddress"
+      ],
+      "properties": [
+        "address"
+      ]
+    },
+    {
+      "name": "phone_number",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Phone"
+      ],
+      "properties": [
+        "number"
+      ]
+    },
+    {
+      "name": "transaction_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Transaction"
+      ],
+      "properties": [
+        "txId"
+      ]
+    }
+  ],
+  "sample_nodes": {
+    "Transaction": [
+      {
+        "amount": 10464.62,
+        "txId": "ring1_tx_01",
+        "currency": "USD",
+        "txType": "transfer",
+        "timestamp": "2026-03-27T22:24:40",
+        "status": "completed"
+      },
+      {
+        "amount": 9958.71,
+        "txId": "ring1_tx_02",
+        "currency": "USD",
+        "txType": "transfer",
+        "timestamp": "2026-04-02T15:53:40",
+        "status": "completed"
+      },
+      {
+        "amount": 9515.36,
+        "txId": "ring1_tx_03",
+        "currency": "USD",
+        "txType": "transfer",
+        "timestamp": "2026-04-18T16:04:40",
+        "status": "completed"
+      },
+      {
+        "amount": 21159.16,
+        "txId": "ring2_tx_01",
+        "currency": "USD",
+        "txType": "transfer",
+        "timestamp": "2026-04-13T23:19:40",
+        "status": "completed"
+      },
+      {
+        "amount": 19281.48,
+        "txId": "ring2_tx_02",
+        "currency": "USD",
+        "txType": "transfer",
+        "timestamp": "2026-04-20T01:49:40",
+        "status": "completed"
+      },
+      {
+        "amount": 17601.87,
+        "txId": "ring2_tx_03",
+        "currency": "USD",
+        "txType": "transfer",
+        "timestamp": "2026-04-10T21:26:40",
+        "status": "completed"
+      },
+      {
+        "amount": 15611.62,
+        "txId": "ring2_tx_04",
+        "currency": "USD",
+        "txType": "transfer",
+        "timestamp": "2026-03-25T20:20:40",
+        "status": "completed"
+      },
+      {
+        "amount": 11825.87,
+        "txId": "ring3_tx_01",
+        "currency": "USD",
+        "txType": "transfer",
+        "timestamp": "2026-04-19T12:17:40",
+        "status": "completed"
+      },
+      {
+        "amount": 10345.41,
+        "txId": "ring3_tx_02",
+        "currency": "USD",
+        "txType": "transfer",
+        "timestamp": "2026-04-06T11:24:40",
+        "status": "completed"
+      },
+      {
+        "amount": 9406.03,
+        "txId": "ring3_tx_03",
+        "currency": "USD",
+        "txType": "transfer",
+        "timestamp": "2026-04-09T19:25:40",
+        "status": "completed"
+      }
+    ],
+    "Phone": [
+      {
+        "number": 18542867825,
+        "carrier": "Verizon"
+      },
+      {
+        "number": 19595614226,
+        "carrier": "AT&T"
+      },
+      {
+        "number": 14283341057,
+        "carrier": "Verizon"
+      },
+      {
+        "number": 18922458591,
+        "carrier": "Orange"
+      },
+      {
+        "number": 16321533224,
+        "carrier": "Verizon"
+      },
+      {
+        "number": 12954668136,
+        "carrier": "AT&T"
+      },
+      {
+        "number": 17171445199,
+        "carrier": "Orange"
+      },
+      {
+        "number": 14038038374,
+        "carrier": "AT&T"
+      },
+      {
+        "number": 16595667265,
+        "carrier": "Verizon"
+      },
+      {
+        "number": 19773678638,
+        "carrier": "Vodafone"
+      }
+    ],
+    "Device": [
+      {
+        "deviceType": "browser",
+        "os": "Linux",
+        "firstSeen": "2026-01-31T09:27:40",
+        "deviceId": "dev_001"
+      },
+      {
+        "deviceType": "browser",
+        "os": "Android 14",
+        "firstSeen": "2025-10-27T11:02:40",
+        "deviceId": "dev_002"
+      },
+      {
+        "deviceType": "browser",
+        "os": "Windows 11",
+        "firstSeen": "2025-08-05T02:29:40",
+        "deviceId": "dev_003"
+      },
+      {
+        "deviceType": "mobile",
+        "os": "iOS 17",
+        "firstSeen": "2025-05-31T03:52:40",
+        "deviceId": "dev_004"
+      },
+      {
+        "deviceType": "desktop",
+        "os": "iOS 17",
+        "firstSeen": "2026-04-19T06:56:40",
+        "deviceId": "dev_005"
+      },
+      {
+        "deviceType": "mobile",
+        "os": "Windows 11",
+        "firstSeen": "2026-01-27T18:17:40",
+        "deviceId": "dev_006"
+      },
+      {
+        "deviceType": "browser",
+        "os": "macOS 14",
+        "firstSeen": "2025-07-07T17:38:40",
+        "deviceId": "dev_007"
+      },
+      {
+        "deviceType": "mobile",
+        "os": "Android 14",
+        "firstSeen": "2025-07-15T15:52:40",
+        "deviceId": "dev_008"
+      },
+      {
+        "deviceType": "desktop",
+        "os": "Linux",
+        "firstSeen": "2025-07-12T13:18:40",
+        "deviceId": "dev_009"
+      },
+      {
+        "deviceType": "mobile",
+        "os": "iOS 17",
+        "firstSeen": "2025-11-14T05:48:40",
+        "deviceId": "dev_010"
+      }
+    ],
+    "IPAddress": [
+      {
+        "country": "NG",
+        "address": "10.84.135.136",
+        "isVPN": true
+      },
+      {
+        "country": "NL",
+        "address": "10.108.102.183",
+        "isVPN": true
+      },
+      {
+        "country": "CN",
+        "address": "10.204.191.113",
+        "isVPN": true
+      },
+      {
+        "country": "GB",
+        "address": "10.61.126.58",
+        "isVPN": true
+      },
+      {
+        "country": "FR",
+        "address": "10.173.10.151",
+        "isVPN": true
+      },
+      {
+        "country": "US",
+        "address": "10.112.3.19",
+        "isVPN": true
+      },
+      {
+        "country": "US",
+        "address": "10.117.34.232",
+        "isVPN": true
+      },
+      {
+        "country": "FR",
+        "address": "10.169.36.132",
+        "isVPN": true
+      },
+      {
+        "country": "DE",
+        "address": "10.142.248.55",
+        "isVPN": false
+      },
+      {
+        "country": "CN",
+        "address": "10.242.124.201",
+        "isVPN": false
+      }
+    ],
+    "Account": [
+      {
+        "owner": "Owner 1",
+        "accountId": "acc_001",
+        "createdAt": "2025-07-13T03:41:40",
+        "balance": 31374.75,
+        "riskScore": 0.84,
+        "type": "business",
+        "status": "flagged"
+      },
+      {
+        "owner": "Owner 2",
+        "accountId": "acc_002",
+        "createdAt": "2025-05-28T00:40:40",
+        "balance": 13658.58,
+        "riskScore": 0.87,
+        "type": "savings",
+        "status": "flagged"
+      },
+      {
+        "owner": "Owner 3",
+        "accountId": "acc_003",
+        "createdAt": "2024-04-27T11:41:40",
+        "balance": 34728.1,
+        "riskScore": 0.65,
+        "type": "business",
+        "status": "active"
+      },
+      {
+        "owner": "Owner 4",
+        "accountId": "acc_004",
+        "createdAt": "2025-02-19T16:32:40",
+        "balance": 27176.3,
+        "riskScore": 0.76,
+        "type": "crypto",
+        "status": "flagged"
+      },
+      {
+        "owner": "Owner 5",
+        "accountId": "acc_005",
+        "createdAt": "2024-08-29T19:44:40",
+        "balance": 45251.44,
+        "riskScore": 0.92,
+        "type": "business",
+        "status": "flagged"
+      },
+      {
+        "owner": "Owner 6",
+        "accountId": "acc_006",
+        "createdAt": "2025-04-25T07:57:40",
+        "balance": 23901.29,
+        "riskScore": 0.93,
+        "type": "business",
+        "status": "flagged"
+      },
+      {
+        "owner": "Owner 7",
+        "accountId": "acc_007",
+        "createdAt": "2024-10-07T21:48:40",
+        "balance": 26957.21,
+        "riskScore": 0.75,
+        "type": "business",
+        "status": "flagged"
+      },
+      {
+        "owner": "Owner 8",
+        "accountId": "acc_008",
+        "createdAt": "2026-03-22T05:24:40",
+        "balance": 21848.22,
+        "riskScore": 0.68,
+        "type": "crypto",
+        "status": "active"
+      },
+      {
+        "owner": "Owner 9",
+        "accountId": "acc_009",
+        "createdAt": "2024-12-28T13:06:40",
+        "balance": 36236.65,
+        "riskScore": 0.85,
+        "type": "business",
+        "status": "flagged"
+      },
+      {
+        "owner": "Owner 10",
+        "accountId": "acc_010",
+        "createdAt": "2024-06-11T17:40:40",
+        "balance": 29635.45,
+        "riskScore": 0.8,
+        "type": "business",
+        "status": "flagged"
+      }
+    ]
+  }
+}

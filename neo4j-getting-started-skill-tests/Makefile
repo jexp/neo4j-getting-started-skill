@@ -1,12 +1,11 @@
 SKILL_NAME := neo4j-getting-started-skill
 SKILL_INSTALL_DIR := $(HOME)/.claude/skills/$(SKILL_NAME)
-SKILL_SRC := $(CURDIR)
-
-HARNESS := tests/harness/runner.py
-PERSONAS_DIR := tests/personas
-
-# Repo root (one level up from neo4j-getting-started-skill/neo4j-getting-started-skill/)
 REPO_ROOT := $(CURDIR)/..
+SKILL_SRC := $(REPO_ROOT)/$(SKILL_NAME)
+
+HARNESS := harness/runner.py
+PERSONAS_DIR := personas
+TESTS_DIR := $(CURDIR)
 
 .PHONY: install-skill uninstall-skill reinstall-skill \
         test-cypher test-load \
@@ -60,12 +59,11 @@ reinstall-skill: uninstall-skill install-skill
 
 test-cypher:
 	@echo "Validating Cypher blocks in references/ ..."
-	cd "$(REPO_ROOT)" && python3 validate_cypher.py
-
+	python3 $(REPO_ROOT)/validate_cypher.py
 
 test-load:
 	@echo "Validating Python load scripts ..."
-	cd "$(REPO_ROOT)" && python3 test_load_scripts.py
+	python3 $(REPO_ROOT)/test_load_scripts.py
 
 # ─── Integration tests ────────────────────────────────────────────────────────
 
@@ -77,7 +75,7 @@ integration-alex: reinstall-skill
 integration-sam: reinstall-skill
 	@echo "Running integration test: sam_developer ..."
 	python3 $(HARNESS) --persona $(PERSONAS_DIR)/sam_developer.yml \
-	  --fixture $(CURDIR)/tests/fixtures/sam_ecommerce --verbose
+	  --fixture $(TESTS_DIR)/fixtures/sam_ecommerce --verbose
 	@$(MAKE) --no-print-directory uninstall-skill
 
 integration-priya: reinstall-skill
@@ -95,34 +93,34 @@ integration-alex-from-explore: reinstall-skill
 	@echo "Running integration test: alex_beginner starting from stage 5-explore ..."
 	@echo "(Stages 0-4 pre-populated from fixture)"
 	python3 $(HARNESS) --persona $(PERSONAS_DIR)/alex_beginner.yml \
-	  --fixture $(CURDIR)/tests/fixtures/alex_after_load --verbose
+	  --fixture $(TESTS_DIR)/fixtures/alex_after_load --verbose
 	@$(MAKE) --no-print-directory uninstall-skill
 
 # ─── Structure validation (no Claude) ─────────────────────────────────────────
 
 test-quick:
 	@echo "Validating skill structure..."
-	@test -f SKILL.md && echo "  ✓ SKILL.md" || echo "  ✗ SKILL.md MISSING"
-	@test -f AGENTS.md && echo "  ✓ AGENTS.md" || echo "  ✗ AGENTS.md MISSING"
+	@test -f $(SKILL_SRC)/SKILL.md && echo "  ✓ SKILL.md" || echo "  ✗ SKILL.md MISSING"
+	@test -f $(SKILL_SRC)/AGENTS.md && echo "  ✓ AGENTS.md" || echo "  ✗ AGENTS.md MISSING"
 	@for stage in 0-prerequisites 1-context 2-provision 3-model 4-load 5-explore 6-query 7-build; do \
-	  test -f references/$$stage.md \
+	  test -f $(SKILL_SRC)/references/$$stage.md \
 	    && echo "  ✓ references/$$stage.md" \
 	    || echo "  ✗ references/$$stage.md MISSING"; \
 	done
-	@test -f references/domain-patterns.md && echo "  ✓ domain-patterns.md" || echo "  ✗ domain-patterns.md MISSING"
-	@test -f references/capabilities/execute-cypher.md && echo "  ✓ execute-cypher.md" || echo "  ✗ execute-cypher.md MISSING"
-	@test -f references/capabilities/cypher-authoring.md && echo "  ✓ cypher-authoring.md" || echo "  ✗ cypher-authoring.md MISSING"
-	@test -f references/capabilities/mcp-config.md && echo "  ✓ mcp-config.md" || echo "  ✗ mcp-config.md MISSING"
-	@test -f tests/personas/alex_beginner.yml && echo "  ✓ alex_beginner.yml" || echo "  ✗ alex_beginner.yml MISSING"
-	@test -f tests/personas/sam_developer.yml && echo "  ✓ sam_developer.yml" || echo "  ✗ sam_developer.yml MISSING"
-	@test -f tests/personas/priya_analyst.yml && echo "  ✓ priya_analyst.yml" || echo "  ✗ priya_analyst.yml MISSING"
-	@test -f tests/personas/elena_healthcare.yml && echo "  ✓ elena_healthcare.yml" || echo "  ✗ elena_healthcare.yml MISSING"
-	@test -f tests/harness/runner.py && echo "  ✓ runner.py" || echo "  ✗ runner.py MISSING"
-	@test -f tests/harness/validator.py && echo "  ✓ validator.py" || echo "  ✗ validator.py MISSING"
-	@test -f scripts/validate_queries.py && echo "  ✓ scripts/validate_queries.py" || echo "  ✗ scripts/validate_queries.py MISSING"
-	@python3 -m py_compile tests/harness/runner.py && echo "  ✓ runner.py syntax OK" || echo "  ✗ runner.py syntax ERRORS"
-	@python3 -m py_compile tests/harness/validator.py && echo "  ✓ validator.py syntax OK" || echo "  ✗ validator.py syntax ERRORS"
-	@python3 -m py_compile scripts/validate_queries.py && echo "  ✓ validate_queries.py syntax OK" || echo "  ✗ validate_queries.py syntax ERRORS"
+	@test -f $(SKILL_SRC)/references/domain-patterns.md && echo "  ✓ domain-patterns.md" || echo "  ✗ domain-patterns.md MISSING"
+	@test -f $(SKILL_SRC)/references/capabilities/execute-cypher.md && echo "  ✓ execute-cypher.md" || echo "  ✗ execute-cypher.md MISSING"
+	@test -f $(SKILL_SRC)/references/capabilities/cypher-authoring.md && echo "  ✓ cypher-authoring.md" || echo "  ✗ cypher-authoring.md MISSING"
+	@test -f $(SKILL_SRC)/references/capabilities/mcp-config.md && echo "  ✓ mcp-config.md" || echo "  ✗ mcp-config.md MISSING"
+	@test -f $(TESTS_DIR)/personas/alex_beginner.yml && echo "  ✓ alex_beginner.yml" || echo "  ✗ alex_beginner.yml MISSING"
+	@test -f $(TESTS_DIR)/personas/sam_developer.yml && echo "  ✓ sam_developer.yml" || echo "  ✗ sam_developer.yml MISSING"
+	@test -f $(TESTS_DIR)/personas/priya_analyst.yml && echo "  ✓ priya_analyst.yml" || echo "  ✗ priya_analyst.yml MISSING"
+	@test -f $(TESTS_DIR)/personas/elena_healthcare.yml && echo "  ✓ elena_healthcare.yml" || echo "  ✗ elena_healthcare.yml MISSING"
+	@test -f $(TESTS_DIR)/harness/runner.py && echo "  ✓ runner.py" || echo "  ✗ runner.py MISSING"
+	@test -f $(TESTS_DIR)/harness/validator.py && echo "  ✓ validator.py" || echo "  ✗ validator.py MISSING"
+	@test -f $(SKILL_SRC)/scripts/validate_queries.py && echo "  ✓ scripts/validate_queries.py" || echo "  ✗ scripts/validate_queries.py MISSING"
+	@python3 -m py_compile $(TESTS_DIR)/harness/runner.py && echo "  ✓ runner.py syntax OK" || echo "  ✗ runner.py syntax ERRORS"
+	@python3 -m py_compile $(TESTS_DIR)/harness/validator.py && echo "  ✓ validator.py syntax OK" || echo "  ✗ validator.py syntax ERRORS"
+	@python3 -m py_compile $(SKILL_SRC)/scripts/validate_queries.py && echo "  ✓ validate_queries.py syntax OK" || echo "  ✗ validate_queries.py syntax ERRORS"
 	@echo "Done."
 
 # ─── Manual testing ───────────────────────────────────────────────────────────

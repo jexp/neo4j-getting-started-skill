@@ -166,7 +166,7 @@ make integration-alex        # Aura — social network notebook
 make integration-priya       # Aura — fraud detection FastAPI
 
 # All personas (sequential)
-python3 tests/harness/runner.py --all-personas
+python3 neo4j-getting-started-skill-tests/harness/runner.py --all-personas
 
 # Keep Docker container after run (for manual inspection)
 make integration-elena       # container kept running by default
@@ -174,7 +174,7 @@ make integration-elena       # container kept running by default
 docker stop neo4j-elena-test && docker rm neo4j-elena-test
 ```
 
-Test results land in `tests/results/`. Each run produces a JSON gate report and a DB snapshot.
+Test results land in `neo4j-getting-started-skill-tests/results/`. Each run produces a JSON gate report and a DB snapshot.
 
 ## Configuration
 

@@ -1,0 +1,464 @@
+{
+  "node_counts": [
+    {
+      "label": "Encounter",
+      "count": 630
+    },
+    {
+      "label": "Patient",
+      "count": 120
+    },
+    {
+      "label": "Provider",
+      "count": 15
+    },
+    {
+      "label": "Diagnosis",
+      "count": 15
+    },
+    {
+      "label": "Medication",
+      "count": 15
+    }
+  ],
+  "rel_counts": [
+    {
+      "type": "RESULTED_IN_DIAGNOSIS",
+      "count": 681
+    },
+    {
+      "type": "HAD_ENCOUNTER",
+      "count": 630
+    },
+    {
+      "type": "WITH_PROVIDER",
+      "count": 630
+    },
+    {
+      "type": "PRESCRIBED",
+      "count": 472
+    },
+    {
+      "type": "HAS_ACTIVE_DIAGNOSIS",
+      "count": 305
+    },
+    {
+      "type": "GENERATED_REFERRAL",
+      "count": 40
+    }
+  ],
+  "constraints": [
+    {
+      "name": "diagnosis_icd10",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Diagnosis"
+      ],
+      "properties": [
+        "icd10"
+      ]
+    },
+    {
+      "name": "encounter_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Encounter"
+      ],
+      "properties": [
+        "id"
+      ]
+    },
+    {
+      "name": "medication_rxnorm",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Medication"
+      ],
+      "properties": [
+        "rxnorm"
+      ]
+    },
+    {
+      "name": "patient_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Patient"
+      ],
+      "properties": [
+        "id"
+      ]
+    },
+    {
+      "name": "provider_npi",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Provider"
+      ],
+      "properties": [
+        "npi"
+      ]
+    }
+  ],
+  "sample_nodes": {
+    "Patient": [
+      {
+        "zipCode": 2143,
+        "gender": "F",
+        "dob": "1985-02-01",
+        "name": "William Davis",
+        "id": "p001",
+        "insurerId": "INS-AETNA"
+      },
+      {
+        "zipCode": 2472,
+        "gender": "M",
+        "dob": "1992-02-22",
+        "name": "Aisha Williams",
+        "id": "p002",
+        "insurerId": "INS-HUMANA"
+      },
+      {
+        "zipCode": 2460,
+        "gender": "F",
+        "dob": "1947-01-03",
+        "name": "Michael Davis",
+        "id": "p003",
+        "insurerId": "INS-MEDICARE"
+      },
+      {
+        "zipCode": 2143,
+        "gender": "M",
+        "dob": "1946-09-07",
+        "name": "Aisha Harris",
+        "id": "p004",
+        "insurerId": "INS-HUMANA"
+      },
+      {
+        "zipCode": 2148,
+        "gender": "F",
+        "dob": "1982-05-26",
+        "name": "James Garcia",
+        "id": "p005",
+        "insurerId": "INS-UNITED"
+      },
+      {
+        "zipCode": 2139,
+        "gender": "M",
+        "dob": "1962-03-07",
+        "name": "Carlos Brown",
+        "id": "p006",
+        "insurerId": "INS-HUMANA"
+      },
+      {
+        "zipCode": 2169,
+        "gender": "F",
+        "dob": "1951-06-28",
+        "name": "Elena King",
+        "id": "p007",
+        "insurerId": "INS-BCBS"
+      },
+      {
+        "zipCode": 2139,
+        "gender": "M",
+        "dob": "1991-08-18",
+        "name": "Sarah White",
+        "id": "p008",
+        "insurerId": "INS-MEDICARE"
+      },
+      {
+        "zipCode": 2143,
+        "gender": "F",
+        "dob": "1963-11-20",
+        "name": "Elena Young",
+        "id": "p009",
+        "insurerId": "INS-BCBS"
+      },
+      {
+        "zipCode": 2143,
+        "gender": "F",
+        "dob": "1947-11-08",
+        "name": "Patricia Williams",
+        "id": "p010",
+        "insurerId": "INS-BCBS"
+      }
+    ],
+    "Provider": [
+      {
+        "specialty": "Primary Care",
+        "facilityType": "Clinic",
+        "city": "Boston",
+        "npi": "npi001",
+        "name": "Dr. Sarah Chen"
+      },
+      {
+        "specialty": "Primary Care",
+        "facilityType": "Clinic",
+        "city": "Cambridge",
+        "npi": "npi002",
+        "name": "Dr. James Okafor"
+      },
+      {
+        "specialty": "Cardiology",
+        "facilityType": "Hospital",
+        "city": "Boston",
+        "npi": "npi003",
+        "name": "Dr. Maria Santos"
+      },
+      {
+        "specialty": "Endocrinology",
+        "facilityType": "Clinic",
+        "city": "Boston",
+        "npi": "npi004",
+        "name": "Dr. David Kim"
+      },
+      {
+        "specialty": "Nephrology",
+        "facilityType": "Hospital",
+        "city": "Brookline",
+        "npi": "npi005",
+        "name": "Dr. Amara Diallo"
+      },
+      {
+        "specialty": "Pulmonology",
+        "facilityType": "Clinic",
+        "city": "Cambridge",
+        "npi": "npi006",
+        "name": "Dr. Robert Lee"
+      },
+      {
+        "specialty": "Psychiatry",
+        "facilityType": "Clinic",
+        "city": "Somerville",
+        "npi": "npi007",
+        "name": "Dr. Fatima Al-Zahra"
+      },
+      {
+        "specialty": "Cardiology",
+        "facilityType": "Hospital",
+        "city": "Boston",
+        "npi": "npi008",
+        "name": "Dr. John Pearson"
+      },
+      {
+        "specialty": "Primary Care",
+        "facilityType": "Clinic",
+        "city": "Quincy",
+        "npi": "npi009",
+        "name": "Dr. Lisa Nguyen"
+      },
+      {
+        "specialty": "Endocrinology",
+        "facilityType": "Hospital",
+        "city": "Boston",
+        "npi": "npi010",
+        "name": "Dr. Michael Torres"
+      }
+    ],
+    "Encounter": [
+      {
+        "date": "2024-06-12",
+        "id": "e0001",
+        "type": "Office Visit",
+        "chiefComplaint": "Blood sugar management",
+        "status": "completed",
+        "durationMin": 45
+      },
+      {
+        "date": "2024-07-22",
+        "id": "e0002",
+        "type": "Office Visit",
+        "chiefComplaint": "Chest pain",
+        "status": "no-show",
+        "durationMin": 45
+      },
+      {
+        "date": "2024-11-28",
+        "id": "e0003",
+        "type": "Office Visit",
+        "chiefComplaint": "Anxiety/depression",
+        "status": "completed",
+        "durationMin": 20
+      },
+      {
+        "date": "2025-02-13",
+        "id": "e0004",
+        "type": "Follow-up",
+        "chiefComplaint": "Medication review",
+        "status": "completed",
+        "durationMin": 20
+      },
+      {
+        "date": "2025-02-20",
+        "id": "e0005",
+        "type": "Telehealth",
+        "chiefComplaint": "Routine checkup",
+        "status": "completed",
+        "durationMin": 30
+      },
+      {
+        "date": "2025-11-06",
+        "id": "e0006",
+        "type": "Telehealth",
+        "chiefComplaint": "Anxiety/depression",
+        "status": "completed",
+        "durationMin": 20
+      },
+      {
+        "date": "2026-01-02",
+        "id": "e0007",
+        "type": "Telehealth",
+        "chiefComplaint": "Chest pain",
+        "status": "completed",
+        "durationMin": 45
+      },
+      {
+        "date": "2024-07-04",
+        "id": "e0008",
+        "type": "Telehealth",
+        "chiefComplaint": "Kidney function review",
+        "status": "completed",
+        "durationMin": 15
+      },
+      {
+        "date": "2024-08-10",
+        "id": "e0009",
+        "type": "Telehealth",
+        "chiefComplaint": "Headache",
+        "status": "completed",
+        "durationMin": 45
+      },
+      {
+        "date": "2024-08-22",
+        "id": "e0010",
+        "type": "Office Visit",
+        "chiefComplaint": "Dizziness",
+        "status": "completed",
+        "durationMin": 15
+      }
+    ],
+    "Diagnosis": [
+      {
+        "name": "Type 2 diabetes mellitus, unspecified",
+        "category": "Endocrine",
+        "chronic": true,
+        "icd10": "E11.9"
+      },
+      {
+        "name": "Essential hypertension",
+        "category": "Circulatory",
+        "chronic": true,
+        "icd10": "I10"
+      },
+      {
+        "name": "Atherosclerotic heart disease, native vessel",
+        "category": "Circulatory",
+        "chronic": true,
+        "icd10": "I25.10"
+      },
+      {
+        "name": "Chronic kidney disease, stage 3",
+        "category": "Genitourinary",
+        "chronic": true,
+        "icd10": "N18.3"
+      },
+      {
+        "name": "Unspecified asthma, uncomplicated",
+        "category": "Respiratory",
+        "chronic": true,
+        "icd10": "J45.909"
+      },
+      {
+        "name": "Major depressive disorder, unspecified",
+        "category": "Mental Health",
+        "chronic": true,
+        "icd10": "F32.9"
+      },
+      {
+        "name": "Hyperlipidemia, unspecified",
+        "category": "Endocrine",
+        "chronic": true,
+        "icd10": "E78.5"
+      },
+      {
+        "name": "Low back pain",
+        "category": "Musculoskeletal",
+        "chronic": false,
+        "icd10": "M54.5"
+      },
+      {
+        "name": "Acute upper respiratory infection, unspecified",
+        "category": "Respiratory",
+        "chronic": false,
+        "icd10": "J06.9"
+      },
+      {
+        "name": "GERD with esophagitis",
+        "category": "Digestive",
+        "chronic": true,
+        "icd10": "K21.0"
+      }
+    ],
+    "Medication": [
+      {
+        "strength": "500mg",
+        "rxnorm": 860975,
+        "name": "Metformin 500mg",
+        "class": "Biguanide"
+      },
+      {
+        "strength": "10mg",
+        "rxnorm": 29046,
+        "name": "Lisinopril 10mg",
+        "class": "ACE Inhibitor"
+      },
+      {
+        "strength": "40mg",
+        "rxnorm": 617312,
+        "name": "Atorvastatin 40mg",
+        "class": "Statin"
+      },
+      {
+        "strength": "90mcg",
+        "rxnorm": 435,
+        "name": "Albuterol 90mcg inhaler",
+        "class": "Bronchodilator"
+      },
+      {
+        "strength": "50mg",
+        "rxnorm": 596,
+        "name": "Sertraline 50mg",
+        "class": "SSRI"
+      },
+      {
+        "strength": "5mg",
+        "rxnorm": 83367,
+        "name": "Amlodipine 5mg",
+        "class": "CCB"
+      },
+      {
+        "strength": "20mg",
+        "rxnorm": 41493,
+        "name": "Omeprazole 20mg",
+        "class": "PPI"
+      },
+      {
+        "strength": "40mg",
+        "rxnorm": 321988,
+        "name": "Furosemide 40mg",
+        "class": "Loop Diuretic"
+      },
+      {
+        "strength": "81mg",
+        "rxnorm": 1998,
+        "name": "Aspirin 81mg",
+        "class": "Antiplatelet"
+      },
+      {
+        "strength": "25mg",
+        "rxnorm": 200801,
+        "name": "Metoprolol Succinate 25mg",
+        "class": "Beta Blocker"
+      }
+    ]
+  }
+}

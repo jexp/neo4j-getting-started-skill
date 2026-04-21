@@ -1,0 +1,520 @@
+{
+  "node_counts": [
+    {
+      "label": "Transaction",
+      "count": 753
+    },
+    {
+      "label": "Account",
+      "count": 253
+    },
+    {
+      "label": "Person",
+      "count": 80
+    },
+    {
+      "label": "IP",
+      "count": 60
+    },
+    {
+      "label": "Device",
+      "count": 50
+    }
+  ],
+  "rel_counts": [
+    {
+      "type": "INITIATED",
+      "count": 753
+    },
+    {
+      "type": "CREDITED_TO",
+      "count": 753
+    },
+    {
+      "type": "LOGGED_IN_FROM",
+      "count": 381
+    },
+    {
+      "type": "ACCESSED_FROM",
+      "count": 378
+    },
+    {
+      "type": "OWNS",
+      "count": 253
+    }
+  ],
+  "constraints": [
+    {
+      "name": "device_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Device"
+      ],
+      "properties": [
+        "deviceId"
+      ]
+    },
+    {
+      "name": "ip_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "IP"
+      ],
+      "properties": [
+        "ipId"
+      ]
+    },
+    {
+      "name": "person_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Person"
+      ],
+      "properties": [
+        "personId"
+      ]
+    },
+    {
+      "name": "txn_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Transaction"
+      ],
+      "properties": [
+        "txnId"
+      ]
+    }
+  ],
+  "sample_nodes": {
+    "Transaction": [
+      {
+        "amount": 3000.79,
+        "channel": "mobile",
+        "description": "Payment ref #38389",
+        "currency": "USD",
+        "txnType": "transfer",
+        "txnId": "txn000001",
+        "status": "completed",
+        "timestamp": "2023-03-19T00:00:00"
+      },
+      {
+        "amount": 4963.95,
+        "channel": "atm",
+        "description": "Payment ref #88753",
+        "currency": "USD",
+        "txnType": "payment",
+        "txnId": "txn000002",
+        "status": "completed",
+        "timestamp": "2023-04-30T00:00:00"
+      },
+      {
+        "amount": 2917.4,
+        "channel": "branch",
+        "description": "Payment ref #69437",
+        "currency": "USD",
+        "txnType": "withdrawal",
+        "txnId": "txn000003",
+        "status": "completed",
+        "timestamp": "2023-09-30T00:00:00"
+      },
+      {
+        "amount": 353.53,
+        "channel": "mobile",
+        "description": "Payment ref #12170",
+        "currency": "USD",
+        "txnType": "deposit",
+        "txnId": "txn000004",
+        "status": "completed",
+        "timestamp": "2023-06-22T00:00:00"
+      },
+      {
+        "amount": 4299.36,
+        "channel": "api",
+        "description": "Payment ref #22622",
+        "currency": "USD",
+        "txnType": "deposit",
+        "txnId": "txn000005",
+        "status": "completed",
+        "timestamp": "2023-04-18T00:00:00"
+      },
+      {
+        "amount": 4509.03,
+        "channel": "api",
+        "description": "Payment ref #25403",
+        "currency": "USD",
+        "txnType": "transfer",
+        "txnId": "txn000006",
+        "status": "failed",
+        "timestamp": "2023-02-28T00:00:00"
+      },
+      {
+        "amount": 3300.37,
+        "channel": "api",
+        "description": "Payment ref #65139",
+        "currency": "USD",
+        "txnType": "transfer",
+        "txnId": "txn000007",
+        "status": "pending",
+        "timestamp": "2023-02-27T00:00:00"
+      },
+      {
+        "amount": 3491.24,
+        "channel": "atm",
+        "description": "Payment ref #55943",
+        "currency": "USD",
+        "txnType": "payment",
+        "txnId": "txn000008",
+        "status": "pending",
+        "timestamp": "2023-05-27T00:00:00"
+      },
+      {
+        "amount": 3709.56,
+        "channel": "web",
+        "description": "Payment ref #43360",
+        "currency": "USD",
+        "txnType": "transfer",
+        "txnId": "txn000009",
+        "status": "pending",
+        "timestamp": "2023-01-10T00:00:00"
+      },
+      {
+        "amount": 1170.24,
+        "channel": "api",
+        "description": "Payment ref #63562",
+        "currency": "USD",
+        "txnType": "withdrawal",
+        "txnId": "txn000010",
+        "status": "failed",
+        "timestamp": "2023-11-20T00:00:00"
+      }
+    ],
+    "Person": [
+      {
+        "createdAt": "2023-09-19T00:00:00",
+        "address": "229 Main St, DE",
+        "phone": 18362950628,
+        "name": "Sarah Smith",
+        "personId": "per0001",
+        "email": "sarah.smith1@example.com"
+      },
+      {
+        "createdAt": "2023-09-28T00:00:00",
+        "address": "33 Main St, GB",
+        "phone": 38553035110,
+        "name": "Zara Williams",
+        "personId": "per0002",
+        "email": "zara.williams2@example.com"
+      },
+      {
+        "createdAt": "2023-06-12T00:00:00",
+        "address": "28 Main St, RO",
+        "phone": 33746412689,
+        "name": "Robert Moore",
+        "personId": "per0003",
+        "email": "robert.moore3@example.com"
+      },
+      {
+        "createdAt": "2023-12-26T00:00:00",
+        "address": "604 Main St, NL",
+        "phone": 15582334538,
+        "name": "Zara Kim",
+        "personId": "per0004",
+        "email": "zara.kim4@example.com"
+      },
+      {
+        "createdAt": "2023-01-22T00:00:00",
+        "address": "160 Main St, FR",
+        "phone": 22398362082,
+        "name": "Emma Kim",
+        "personId": "per0005",
+        "email": "emma.kim5@example.com"
+      },
+      {
+        "createdAt": "2022-04-23T00:00:00",
+        "address": "368 Main St, ES",
+        "phone": 25203848421,
+        "name": "Sarah Williams",
+        "personId": "per0006",
+        "email": "sarah.williams6@example.com"
+      },
+      {
+        "createdAt": "2023-10-13T00:00:00",
+        "address": "128 Main St, IT",
+        "phone": 30675770529,
+        "name": "William Jones",
+        "personId": "per0007",
+        "email": "william.jones7@example.com"
+      },
+      {
+        "createdAt": "2022-05-20T00:00:00",
+        "address": "907 Main St, ES",
+        "phone": 41764130526,
+        "name": "Zara Anderson",
+        "personId": "per0008",
+        "email": "zara.anderson8@example.com"
+      },
+      {
+        "createdAt": "2023-10-12T00:00:00",
+        "address": "234 Main St, NL",
+        "phone": 3810026086,
+        "name": "Robert Williams",
+        "personId": "per0009",
+        "email": "robert.williams9@example.com"
+      },
+      {
+        "createdAt": "2023-07-19T00:00:00",
+        "address": "465 Main St, ES",
+        "phone": 25398471886,
+        "name": "Lisa Brown",
+        "personId": "per0010",
+        "email": "lisa.brown10@example.com"
+      }
+    ],
+    "Device": [
+      {
+        "deviceType": "desktop_firefox",
+        "os": "iOS 17",
+        "fingerprint": "fp_790855",
+        "deviceId": "dev0001"
+      },
+      {
+        "deviceType": "android",
+        "os": "Windows 11",
+        "fingerprint": "fp_640490",
+        "deviceId": "dev0002"
+      },
+      {
+        "deviceType": "tablet",
+        "os": "Windows 11",
+        "fingerprint": "fp_197923",
+        "deviceId": "dev0003"
+      },
+      {
+        "deviceType": "ios",
+        "os": "Windows 11",
+        "fingerprint": "fp_335552",
+        "deviceId": "dev0004"
+      },
+      {
+        "deviceType": "ios",
+        "os": "iOS 17",
+        "fingerprint": "fp_125611",
+        "deviceId": "dev0005"
+      },
+      {
+        "deviceType": "android",
+        "os": "iOS 17",
+        "fingerprint": "fp_598216",
+        "deviceId": "dev0006"
+      },
+      {
+        "deviceType": "tablet",
+        "os": "Android 13",
+        "fingerprint": "fp_577538",
+        "deviceId": "dev0007"
+      },
+      {
+        "deviceType": "desktop_firefox",
+        "os": "Ubuntu 22.04",
+        "fingerprint": "fp_303880",
+        "deviceId": "dev0008"
+      },
+      {
+        "deviceType": "desktop_firefox",
+        "os": "macOS 14",
+        "fingerprint": "fp_519066",
+        "deviceId": "dev0009"
+      },
+      {
+        "deviceType": "ios",
+        "os": "iOS 17",
+        "fingerprint": "fp_787926",
+        "deviceId": "dev0010"
+      }
+    ],
+    "IP": [
+      {
+        "isTor": false,
+        "country": "IT",
+        "ipId": "ip0001",
+        "address": "195.225.97.72",
+        "isVpn": false
+      },
+      {
+        "isTor": false,
+        "country": "ES",
+        "ipId": "ip0002",
+        "address": "5.191.138.14",
+        "isVpn": false
+      },
+      {
+        "isTor": false,
+        "country": "GB",
+        "ipId": "ip0003",
+        "address": "246.166.10.194",
+        "isVpn": false
+      },
+      {
+        "isTor": false,
+        "country": "DE",
+        "ipId": "ip0004",
+        "address": "6.159.39.62",
+        "isVpn": false
+      },
+      {
+        "isTor": false,
+        "country": "NL",
+        "ipId": "ip0005",
+        "address": "243.55.119.180",
+        "isVpn": false
+      },
+      {
+        "isTor": false,
+        "country": "US",
+        "ipId": "ip0006",
+        "address": "156.246.191.184",
+        "isVpn": false
+      },
+      {
+        "isTor": false,
+        "country": "NL",
+        "ipId": "ip0007",
+        "address": "80.27.148.7",
+        "isVpn": false
+      },
+      {
+        "isTor": false,
+        "country": "FR",
+        "ipId": "ip0008",
+        "address": "97.101.241.184",
+        "isVpn": false
+      },
+      {
+        "isTor": false,
+        "country": "NL",
+        "ipId": "ip0009",
+        "address": "161.62.26.179",
+        "isVpn": false
+      },
+      {
+        "isTor": false,
+        "country": "GB",
+        "ipId": "ip0010",
+        "address": "31.203.251.145",
+        "isVpn": false
+      }
+    ],
+    "Account": [
+      {
+        "createdAt": "2023-08-02T00:00:00",
+        "accountId": "acc00001",
+        "country": "PL",
+        "holderName": "Karen Tanaka",
+        "flagged": false,
+        "accountType": "prepaid",
+        "riskScore": 0.134,
+        "accountNumber": "ACCT00000001",
+        "status": "active"
+      },
+      {
+        "createdAt": "2023-02-10T00:00:00",
+        "accountId": "acc00002",
+        "country": "IT",
+        "holderName": "Lisa Kim",
+        "flagged": false,
+        "accountType": "checking",
+        "riskScore": 0.223,
+        "accountNumber": "ACCT00000002",
+        "status": "active"
+      },
+      {
+        "createdAt": "2023-09-21T00:00:00",
+        "accountId": "acc00003",
+        "country": "PL",
+        "holderName": "Chen Brown",
+        "flagged": false,
+        "accountType": "prepaid",
+        "riskScore": 0.158,
+        "accountNumber": "ACCT00000003",
+        "status": "active"
+      },
+      {
+        "createdAt": "2023-02-11T00:00:00",
+        "accountId": "acc00004",
+        "country": "PL",
+        "holderName": "Chen Ali",
+        "flagged": false,
+        "accountType": "prepaid",
+        "riskScore": 0.188,
+        "accountNumber": "ACCT00000004",
+        "status": "active"
+      },
+      {
+        "createdAt": "2022-01-21T00:00:00",
+        "accountId": "acc00005",
+        "country": "GB",
+        "holderName": "Sarah M\u00fcller",
+        "flagged": false,
+        "accountType": "savings",
+        "riskScore": 0.09,
+        "accountNumber": "ACCT00000005",
+        "status": "active"
+      },
+      {
+        "createdAt": "2023-07-11T00:00:00",
+        "accountId": "acc00006",
+        "country": "HU",
+        "holderName": "Priya Tanaka",
+        "flagged": false,
+        "accountType": "savings",
+        "riskScore": 0.053,
+        "accountNumber": "ACCT00000006",
+        "status": "active"
+      },
+      {
+        "createdAt": "2022-02-18T00:00:00",
+        "accountId": "acc00007",
+        "country": "PL",
+        "holderName": "William M\u00fcller",
+        "flagged": false,
+        "accountType": "business",
+        "riskScore": 0.003,
+        "accountNumber": "ACCT00000007",
+        "status": "active"
+      },
+      {
+        "createdAt": "2023-06-12T00:00:00",
+        "accountId": "acc00008",
+        "country": "PL",
+        "holderName": "William M\u00fcller",
+        "flagged": false,
+        "accountType": "business",
+        "riskScore": 0.3,
+        "accountNumber": "ACCT00000008",
+        "status": "active"
+      },
+      {
+        "createdAt": "2022-04-21T00:00:00",
+        "accountId": "acc00009",
+        "country": "NL",
+        "holderName": "James Tanaka",
+        "flagged": false,
+        "accountType": "checking",
+        "riskScore": 0.224,
+        "accountNumber": "ACCT00000009",
+        "status": "active"
+      },
+      {
+        "createdAt": "2023-11-28T00:00:00",
+        "accountId": "acc00010",
+        "country": "DE",
+        "holderName": "Maria Anderson",
+        "flagged": false,
+        "accountType": "prepaid",
+        "riskScore": 0.174,
+        "accountNumber": "ACCT00000010",
+        "status": "active"
+      }
+    ]
+  }
+}

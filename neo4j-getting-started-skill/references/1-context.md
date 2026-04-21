@@ -3,9 +3,11 @@
 
 ## Autonomous mode detection — do this FIRST
 
-Before asking anything, check whether all context variables are already present in the initial prompt. Look for: domain, use-case, experience level, database target, data source, and app type — either as explicit key=value pairs or as natural language ("Domain: social, use-case: friend recommendations, experience: beginner, database: aura-free, data: synthetic, app: notebook").
+Before asking anything, attempt to extract all 6 context variables from the initial prompt. Look for: domain, use-case, experience level, database target, data source, and app type — either as explicit key=value pairs or inferred from natural language.
 
-**If all 6 variables can be extracted from the initial prompt → AUTONOMOUS MODE.**
+**The autonomous/HITL decision is based solely on whether all 6 variables are present — never on phrasing like "guide me", "help me", or "walk me through".** Those phrases describe the user's intent, not their preference for interactive vs automated execution.
+
+**If all 6 variables can be extracted → AUTONOMOUS MODE.**
 - Extract and record them immediately (no questions needed)
 - Record `MODE=autonomous` in progress.md alongside the other variables
 - Never pause for approval at any HITL checkpoint in any stage

@@ -1,0 +1,60 @@
+{
+  "persona_id": "priya_analyst",
+  "started_at": "2026-04-20T17:42:50.700333",
+  "ended_at": "2026-04-20T17:52:29.239241",
+  "total_seconds": 578.5176918506622,
+  "passed": false,
+  "gate_summary": "7/8 gates passed",
+  "gates": [
+    {
+      "id": "db_running",
+      "passed": true,
+      "message": "Connected successfully",
+      "elapsed_ms": 273
+    },
+    {
+      "id": "model_valid",
+      "passed": true,
+      "message": "4 labels, 6 rel types, 4 constraints",
+      "elapsed_ms": 146
+    },
+    {
+      "id": "data_present",
+      "passed": true,
+      "message": "1196 nodes present",
+      "elapsed_ms": 96
+    },
+    {
+      "id": "queries_work",
+      "passed": true,
+      "message": "6/10 queries return results",
+      "elapsed_ms": 1673
+    },
+    {
+      "id": "graph_visible",
+      "passed": true,
+      "message": "Browser URL recorded: https://browser.neo4j.io/?connectURL=neo4j%2Bs%3A%2F%2Fneo4j",
+      "elapsed_ms": 3
+    },
+    {
+      "id": "app_generated",
+      "passed": true,
+      "message": "app.py generated and valid",
+      "elapsed_ms": 75
+    },
+    {
+      "id": "time_budget",
+      "passed": false,
+      "message": "Unknown gate: time_budget",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "time_budget",
+      "passed": true,
+      "message": "578.5s / 1200s limit",
+      "elapsed_ms": 0
+    }
+  ],
+  "work_dir": "/var/folders/4z/831gnw5s78dd39__rqzkh4080000gp/T/neo4j_skill_priya_analyst_2nemqwz2",
+  "progress_md": "# Neo4j Getting-Started \u2014 Progress\n<!-- Resume: grep for \"status: pending\" to find the next stage -->\n\n### 0-prerequisites\nstatus: done\nPYTHON=/opt/homebrew/bin/python3\nNEO4J_MCP=/Users/mh/bin/neo4j-mcp\n\n### 2-provision\nstatus: done\nNEO4J_URI=neo4j+s://2ba515de.databases.neo4j.io\nNEO4J_USERNAME=neo4j\nNEO4J_DATABASE=neo4j\nINSTANCE_ID=2ba515de\nfiles=scripts/provision_aura.py\n\n### 7-build\nstatus: done\nartifact=app.py\napp_type=streamlit\nrun_command=streamlit run app.py\nfiles=app.py,requirements.txt\n\n### 6-query\nstatus: done\nqueries_total=10\ntraversal_queries=6\nqueries_returning_rows=6\nfiles=queries/queries.cypher\n\n### 5-explore\nstatus: done\nbrowser_url=https://browser.neo4j.io/?connectURL=neo4j%2Bs%3A%2F%2Fneo4j%402ba515de.databases.neo4j.io\nviz_method=browser\n\n### 4-load\nstatus: done\nnodes=753 Transaction, 253 Account, 80 Person, 60 IP, 50 Device\nrelationships=753 INITIATED, 753 CREDITED_TO, 381 LOGGED_IN_FROM, 378 ACCESSED_FROM, 253 OWNS\nfiles=data/generate.py,data/import.py,schema/reset.cypher\nsample_id=acc00001\n\n### 3-model\nstatus: done\nlabels=Account,Transaction,Person,Device,IP\nrelationships=OWNS,INITIATED,CREDITED_TO,LOGGED_IN_FROM,ACCESSED_FROM,FLAGGED_BY\nconstraints=5\nfiles=schema/schema.json,schema/schema.cypher\nsample_id=acc00001\n\n### 1-context\nstatus: done\nMODE=autonomous\nDOMAIN=financial services\nUSE_CASE=transaction fraud ring detection and suspicious account network analysis\nEXPERIENCE=intermediate\nDB_TARGET=aura-free\nDATA_SOURCE=synthetic\nAPP_TYPE=streamlit\nEXEC_METHOD=mcp\nREGION_HINT=europe-west\n"
+}

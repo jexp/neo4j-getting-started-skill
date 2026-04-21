@@ -33,13 +33,13 @@ neo4j-getting-started-skill/   ← the skill (install this)
       mcp-config.md            ← neo4j-mcp config for Claude Desktop / Claude Code
       kg-from-documents.md     ← GraphRAG ingestion pipeline
     domain-patterns.md         ← graph model templates by domain
-  tests/
-    personas/                  ← YAML personas (Alex, Sam, …)
-    fixtures/                  ← Pre-populated work dirs for mid-flow testing
-    harness/
-      runner.py                ← integration test runner
-      validator.py             ← 7-gate validation
-    results/                   ← test run JSON output (git-ignored)
+neo4j-getting-started-skill-tests/
+  personas/                  ← YAML personas (Alex, Sam, …)
+  fixtures/                  ← Pre-populated work dirs for mid-flow testing
+  harness/
+    runner.py                ← integration test runner
+    validator.py             ← 7-gate validation
+  results/                   ← test run JSON output (git-ignored)
 
 validate_cypher.py             ← syntax-validates all Cypher blocks in references/
 test_load_scripts.py           ← validates Python load scripts against a live DB
@@ -115,7 +115,7 @@ make test-quick
 - Streams Claude's output live; prints `[tool]` lines for each tool call
 - After the run, validates all 7 success gates against the work dir and live DB
 
-**Fixture-based testing** (`tests/fixtures/alex_after_load/`):
+**Fixture-based testing** (`neo4j-getting-started-skill-tests/fixtures/alex_after_load/`):
 Pre-populates stages 0-4 so the test only exercises stages 5-7.
 Used by `make integration-alex-from-explore`. The `__NEO4J_URI__` placeholder in `progress.md` is substituted at runtime from `aura.env`.
 

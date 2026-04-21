@@ -1,0 +1,320 @@
+{
+  "node_counts": [
+    {
+      "label": "Order",
+      "count": 300
+    },
+    {
+      "label": "Customer",
+      "count": 150
+    },
+    {
+      "label": "Product",
+      "count": 46
+    },
+    {
+      "label": "Category",
+      "count": 8
+    }
+  ],
+  "rel_counts": [
+    {
+      "type": "CONTAINS",
+      "count": 898
+    },
+    {
+      "type": "PLACED",
+      "count": 300
+    },
+    {
+      "type": "IN_CATEGORY",
+      "count": 46
+    }
+  ],
+  "constraints": [
+    {
+      "name": "category_name",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Category"
+      ],
+      "properties": [
+        "name"
+      ]
+    },
+    {
+      "name": "customer_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Customer"
+      ],
+      "properties": [
+        "customerId"
+      ]
+    },
+    {
+      "name": "order_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Order"
+      ],
+      "properties": [
+        "orderId"
+      ]
+    },
+    {
+      "name": "product_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Product"
+      ],
+      "properties": [
+        "productId"
+      ]
+    }
+  ],
+  "sample_nodes": {
+    "Customer": [
+      {
+        "country": "AU",
+        "totalSpent": 1550.51,
+        "customerId": "cust1",
+        "name": "Rose Jones",
+        "email": "rose.jones1@example.com",
+        "joinedDate": "2025-01-13"
+      },
+      {
+        "country": "SE",
+        "totalSpent": 2372.81,
+        "customerId": "cust2",
+        "name": "Noah Carter",
+        "email": "noah.carter2@example.com",
+        "joinedDate": "2024-01-01"
+      },
+      {
+        "country": "FR",
+        "totalSpent": 3931.41,
+        "customerId": "cust3",
+        "name": "Jack Thompson",
+        "email": "jack.thompson3@example.com",
+        "joinedDate": "2025-06-09"
+      },
+      {
+        "country": "NL",
+        "totalSpent": 3433.85,
+        "customerId": "cust4",
+        "name": "Wanda Turner",
+        "email": "wanda.turner4@example.com",
+        "joinedDate": "2024-09-29"
+      },
+      {
+        "country": "FR",
+        "totalSpent": 4907.25,
+        "customerId": "cust5",
+        "name": "Laura Wright",
+        "email": "laura.wright5@example.com",
+        "joinedDate": "2024-03-10"
+      },
+      {
+        "country": "UK",
+        "totalSpent": 0.0,
+        "customerId": "cust6",
+        "name": "Iris Mitchell",
+        "email": "iris.mitchell6@example.com",
+        "joinedDate": "2023-06-15"
+      },
+      {
+        "country": "DE",
+        "totalSpent": 1704.15,
+        "customerId": "cust7",
+        "name": "Xander Brown",
+        "email": "xander.brown7@example.com",
+        "joinedDate": "2025-08-09"
+      },
+      {
+        "country": "UK",
+        "totalSpent": 515.87,
+        "customerId": "cust8",
+        "name": "Oscar Anderson",
+        "email": "oscar.anderson8@example.com",
+        "joinedDate": "2023-11-08"
+      },
+      {
+        "country": "CA",
+        "totalSpent": 1852.92,
+        "customerId": "cust9",
+        "name": "Yara King",
+        "email": "yara.king9@example.com",
+        "joinedDate": "2023-08-06"
+      },
+      {
+        "country": "CA",
+        "totalSpent": 0.0,
+        "customerId": "cust10",
+        "name": "Julia Smith",
+        "email": "julia.smith10@example.com",
+        "joinedDate": "2025-07-30"
+      }
+    ],
+    "Product": [
+      {
+        "productId": "prod1",
+        "price": 195.42,
+        "name": "Wireless Headphones",
+        "stockQuantity": 12,
+        "sku": "SKU-0001"
+      },
+      {
+        "productId": "prod2",
+        "price": 225.04,
+        "name": "USB-C Hub",
+        "stockQuantity": 125,
+        "sku": "SKU-0002"
+      },
+      {
+        "productId": "prod3",
+        "price": 74.72,
+        "name": "Mechanical Keyboard",
+        "stockQuantity": 377,
+        "sku": "SKU-0003"
+      },
+      {
+        "productId": "prod4",
+        "price": 39.71,
+        "name": "Webcam HD",
+        "stockQuantity": 379,
+        "sku": "SKU-0004"
+      },
+      {
+        "productId": "prod5",
+        "price": 268.72,
+        "name": "LED Desk Lamp",
+        "stockQuantity": 44,
+        "sku": "SKU-0005"
+      },
+      {
+        "productId": "prod6",
+        "price": 181.23,
+        "name": "Phone Stand",
+        "stockQuantity": 16,
+        "sku": "SKU-0006"
+      },
+      {
+        "productId": "prod7",
+        "price": 18.63,
+        "name": "Bluetooth Speaker",
+        "stockQuantity": 111,
+        "sku": "SKU-0007"
+      },
+      {
+        "productId": "prod8",
+        "price": 77.46,
+        "name": "Smart Watch",
+        "stockQuantity": 308,
+        "sku": "SKU-0008"
+      },
+      {
+        "productId": "prod9",
+        "price": 17.69,
+        "name": "Python Deep Dive",
+        "stockQuantity": 101,
+        "sku": "SKU-0009"
+      },
+      {
+        "productId": "prod10",
+        "price": 217.64,
+        "name": "Graph Databases",
+        "stockQuantity": 359,
+        "sku": "SKU-0010"
+      }
+    ],
+    "Order": [
+      {
+        "orderedAt": "2026-01-13T00:00:00.000000000+00:00",
+        "total": 271.71,
+        "orderId": "ord1",
+        "status": "shipped"
+      },
+      {
+        "orderedAt": "2025-07-10T00:00:00.000000000+00:00",
+        "total": 461.73,
+        "orderId": "ord2",
+        "status": "shipped"
+      },
+      {
+        "orderedAt": "2026-04-12T00:00:00.000000000+00:00",
+        "total": 38.04,
+        "orderId": "ord3",
+        "status": "shipped"
+      },
+      {
+        "orderedAt": "2025-11-15T00:00:00.000000000+00:00",
+        "total": 1637.44,
+        "orderId": "ord4",
+        "status": "refunded"
+      },
+      {
+        "orderedAt": "2025-12-03T00:00:00.000000000+00:00",
+        "total": 1230.11,
+        "orderId": "ord5",
+        "status": "completed"
+      },
+      {
+        "orderedAt": "2025-05-02T00:00:00.000000000+00:00",
+        "total": 1194.24,
+        "orderId": "ord6",
+        "status": "completed"
+      },
+      {
+        "orderedAt": "2025-06-19T00:00:00.000000000+00:00",
+        "total": 546.11,
+        "orderId": "ord7",
+        "status": "completed"
+      },
+      {
+        "orderedAt": "2025-04-23T00:00:00.000000000+00:00",
+        "total": 775.16,
+        "orderId": "ord8",
+        "status": "completed"
+      },
+      {
+        "orderedAt": "2025-07-01T00:00:00.000000000+00:00",
+        "total": 440.02,
+        "orderId": "ord9",
+        "status": "shipped"
+      },
+      {
+        "orderedAt": "2026-03-18T00:00:00.000000000+00:00",
+        "total": 1124.28,
+        "orderId": "ord10",
+        "status": "pending"
+      }
+    ],
+    "Category": [
+      {
+        "name": "Electronics"
+      },
+      {
+        "name": "Books"
+      },
+      {
+        "name": "Clothing"
+      },
+      {
+        "name": "Home & Garden"
+      },
+      {
+        "name": "Sports"
+      },
+      {
+        "name": "Beauty"
+      },
+      {
+        "name": "Toys"
+      },
+      {
+        "name": "Food"
+      }
+    ]
+  }
+}

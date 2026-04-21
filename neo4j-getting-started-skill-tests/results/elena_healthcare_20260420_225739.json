@@ -1,0 +1,54 @@
+{
+  "persona_id": "elena_healthcare",
+  "started_at": "2026-04-20T22:32:32.450287",
+  "ended_at": "2026-04-20T22:57:39.788400",
+  "total_seconds": 1500.0578911304474,
+  "passed": false,
+  "gate_summary": "6/7 gates passed",
+  "gates": [
+    {
+      "id": "db_running",
+      "passed": true,
+      "message": "Connected successfully",
+      "elapsed_ms": 14
+    },
+    {
+      "id": "model_valid",
+      "passed": true,
+      "message": "5 labels, 6 rel types, 5 constraints",
+      "elapsed_ms": 37
+    },
+    {
+      "id": "data_present",
+      "passed": true,
+      "message": "795 nodes present",
+      "elapsed_ms": 15
+    },
+    {
+      "id": "queries_work",
+      "passed": true,
+      "message": "10/10 queries return results",
+      "elapsed_ms": 50
+    },
+    {
+      "id": "graph_visible",
+      "passed": true,
+      "message": "Browser URL recorded: http://localhost:7474",
+      "elapsed_ms": 3
+    },
+    {
+      "id": "app_generated",
+      "passed": true,
+      "message": "notebook.ipynb generated and valid",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "time_budget",
+      "passed": false,
+      "message": "1500.1s / 1500s limit",
+      "elapsed_ms": 0
+    }
+  ],
+  "work_dir": "/var/folders/4z/831gnw5s78dd39__rqzkh4080000gp/T/neo4j_skill_elena_healthcare_wyl8qj9n",
+  "progress_md": "# Neo4j Getting-Started \u2014 Progress\n<!-- Resume: grep for \"status: pending\" to find the next stage -->\n\n### 0-prerequisites\nstatus: done\nPYTHON=/opt/homebrew/bin/python3.14\nNEO4J_MCP=/Users/mh/bin/neo4j-mcp\n\n### 1-context\nstatus: done\nMODE=autonomous\nDOMAIN=healthcare\nUSE_CASE=patient journey analysis \u2014 tracking encounters, diagnoses, and care gaps across providers\nEXPERIENCE=intermediate\nDB_TARGET=local-docker\nDATA_SOURCE=synthetic\nAPP_TYPE=notebook\nEXEC_METHOD=cypher-shell\nREGION_HINT=europe-west\n\n### 2-provision\nstatus: done\nNEO4J_URI=bolt://localhost:7687\nNEO4J_USERNAME=neo4j\nNEO4J_DATABASE=neo4j\nCONTAINER_NAME=neo4j-elena-test\n\n### 3-model\nstatus: done\nlabels=Patient,Provider,Encounter,Diagnosis,Medication\nrelationships=HAD_ENCOUNTER,WITH_PROVIDER,RESULTED_IN_DIAGNOSIS,PRESCRIBED,GENERATED_REFERRAL,HAS_ACTIVE_DIAGNOSIS\nconstraints=5\nfiles=schema/schema.json,schema/schema.cypher\nsample_id=p001\n\n### 4-load\nstatus: done\nnodes=120 Patient, 15 Provider, 630 Encounter, 15 Diagnosis, 15 Medication\nrelationships=630 HAD_ENCOUNTER, 630 WITH_PROVIDER, 681 RESULTED_IN_DIAGNOSIS, 472 PRESCRIBED, 40 GENERATED_REFERRAL, 305 HAS_ACTIVE_DIAGNOSIS\nfiles=data/generate.py,data/import.py,schema/reset.cypher\nsample_id=p001\n\n### 5-explore\nstatus: done\nbrowser_url=http://localhost:7474\nbrowser_url_web=https://browser.neo4j.io/?connectURL=neo4j%2Bs%3A%2F%2Fneo4j%40localhost%3A7687\nviz_method=browser+notebook-neo4j-viz\n\n### 6-query\nstatus: done\nqueries_total=10\ntraversal_queries=8\nqueries_returning_rows=10\nfiles=queries/queries.cypher\n\n### 7-build\nstatus: done\nartifact=notebook.ipynb\napp_type=notebook\nrun_command=jupyter notebook notebook.ipynb\nfiles=notebook.ipynb,requirements.txt\n"
+}

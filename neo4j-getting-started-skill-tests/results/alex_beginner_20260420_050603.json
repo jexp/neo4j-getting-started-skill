@@ -1,0 +1,54 @@
+{
+  "persona_id": "alex_beginner",
+  "started_at": "2026-04-20T04:02:57.327143",
+  "ended_at": "2026-04-20T05:06:01.989509",
+  "total_seconds": 3784.6446630954742,
+  "passed": false,
+  "gate_summary": "4/7 gates passed",
+  "gates": [
+    {
+      "id": "db_running",
+      "passed": true,
+      "message": "Connected successfully",
+      "elapsed_ms": 361
+    },
+    {
+      "id": "model_valid",
+      "passed": true,
+      "message": "4 labels, 5 relationship types",
+      "elapsed_ms": 177
+    },
+    {
+      "id": "data_present",
+      "passed": true,
+      "message": "278 nodes present",
+      "elapsed_ms": 78
+    },
+    {
+      "id": "queries_work",
+      "passed": false,
+      "message": "Only 3 queries found (need \u22655)",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "app_generated",
+      "passed": true,
+      "message": "notebook.ipynb generated and valid",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "time_budget",
+      "passed": false,
+      "message": "Unknown gate: time_budget",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "time_budget",
+      "passed": false,
+      "message": "3784.6s / 900s limit",
+      "elapsed_ms": 0
+    }
+  ],
+  "work_dir": "/var/folders/4z/831gnw5s78dd39__rqzkh4080000gp/T/neo4j_skill_alex_beginner_okh6rxe3",
+  "progress_md": "# Neo4j Getting-Started \u2014 Progress\n<!-- Resume: grep for \"status: pending\" to find the next stage -->\n\n### 0-prerequisites\nstatus: done\nPYTHON=python3.14\nNEO4J_MCP=/Users/mh/bin/neo4j-mcp\n\n### 1-context\nstatus: done\n\nDOMAIN=social\nUSE_CASE=friend recommendations and community discovery\nEXPERIENCE=beginner\nDB_TARGET=aura-free\nDATA_SOURCE=synthetic\nAPP_TYPE=notebook\nLANGUAGE=python\nEXEC_METHOD=mcp\n\n### 2-provision\nstatus: done\nNEO4J_URI=neo4j+s://236c524a.databases.neo4j.io\nINSTANCE_ID=236c524a\n\n### 3-model\nstatus: done\nlabels=Person,Post,Hashtag,Community\nrelationships=FOLLOWS,POSTED,TAGGED,MEMBER_OF,LIKED\nconstraints=4\n\n### 4-load\nstatus: done\nnodes=200 Person, 50 Post, 20 Hashtag, 8 Community\nrelationships=1879 FOLLOWS, 993 LIKED, 502 MEMBER_OF, 132 TAGGED, 50 POSTED\n\n### 5-explore\nstatus: done\nbrowser_url=https://browser.neo4j.io/?connectURL=neo4j%2Bs%3A%2F%2Fneo4j%40236c524a.databases.neo4j.io\nviz_method=browser\n\n### 6-query\nstatus: done\nqueries_total=10\ntraversal_queries=6\nqueries_returning_rows=10\n"
+}

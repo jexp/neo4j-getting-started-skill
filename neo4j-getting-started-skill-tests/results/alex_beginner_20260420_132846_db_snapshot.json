@@ -1,0 +1,304 @@
+{
+  "node_counts": [
+    {
+      "label": "Post",
+      "count": 300
+    },
+    {
+      "label": "Person",
+      "count": 200
+    },
+    {
+      "label": "Hashtag",
+      "count": 17
+    },
+    {
+      "label": "Community",
+      "count": 10
+    }
+  ],
+  "rel_counts": [
+    {
+      "type": "FOLLOWS",
+      "count": 1765
+    },
+    {
+      "type": "LIKED",
+      "count": 1202
+    },
+    {
+      "type": "TAGGED",
+      "count": 605
+    },
+    {
+      "type": "MEMBER_OF",
+      "count": 509
+    },
+    {
+      "type": "POSTED",
+      "count": 300
+    }
+  ],
+  "constraints": [
+    {
+      "name": "community_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Community"
+      ],
+      "properties": [
+        "id"
+      ]
+    },
+    {
+      "name": "hashtag_name",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Hashtag"
+      ],
+      "properties": [
+        "name"
+      ]
+    },
+    {
+      "name": "person_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Person"
+      ],
+      "properties": [
+        "id"
+      ]
+    },
+    {
+      "name": "post_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Post"
+      ],
+      "properties": [
+        "id"
+      ]
+    }
+  ],
+  "sample_nodes": {
+    "Person": [
+      {
+        "joinedAt": "2025-08-13",
+        "name": "Morgan Smith",
+        "bio": "Open source contributor",
+        "id": "p1",
+        "email": "morgan.smithp1@example.com"
+      },
+      {
+        "joinedAt": "2024-05-28",
+        "name": "Quinn Jones",
+        "bio": "Building the future one node at a time",
+        "id": "p2",
+        "email": "quinn.jonesp2@example.com"
+      },
+      {
+        "joinedAt": "2025-02-12",
+        "name": "Rowan Williams",
+        "bio": "Always learning something new",
+        "id": "p3",
+        "email": "rowan.williamsp3@example.com"
+      },
+      {
+        "joinedAt": "2025-09-09",
+        "name": "Jordan Smith",
+        "bio": "Building the future one node at a time",
+        "id": "p4",
+        "email": "jordan.smithp4@example.com"
+      },
+      {
+        "joinedAt": "2026-03-24",
+        "name": "Quinn Martin",
+        "bio": "Always learning something new",
+        "id": "p5",
+        "email": "quinn.martinp5@example.com"
+      },
+      {
+        "joinedAt": "2025-02-15",
+        "name": "Rowan Miller",
+        "bio": "Tech writer & developer advocate",
+        "id": "p6",
+        "email": "rowan.millerp6@example.com"
+      },
+      {
+        "joinedAt": "2025-07-10",
+        "name": "Quinn Moore",
+        "bio": "Always learning something new",
+        "id": "p7",
+        "email": "quinn.moorep7@example.com"
+      },
+      {
+        "joinedAt": "2025-05-07",
+        "name": "Alex Garcia",
+        "bio": "Into hiking, biking, and big ideas",
+        "id": "p8",
+        "email": "alex.garciap8@example.com"
+      },
+      {
+        "joinedAt": "2025-05-11",
+        "name": "Skyler Jones",
+        "bio": "Traveler, thinker, connector",
+        "id": "p9",
+        "email": "skyler.jonesp9@example.com"
+      },
+      {
+        "joinedAt": "2026-01-11",
+        "name": "Morgan Williams",
+        "bio": "Into hiking, biking, and big ideas",
+        "id": "p10",
+        "email": "morgan.williamsp10@example.com"
+      }
+    ],
+    "Post": [
+      {
+        "createdAt": "2025-11-30",
+        "id": "post1",
+        "content": "Great meetup about recommendation engines tonight",
+        "likes": 370
+      },
+      {
+        "createdAt": "2025-06-19",
+        "id": "post2",
+        "content": "Five things I learned about network analysis this week",
+        "likes": 144
+      },
+      {
+        "createdAt": "2025-11-20",
+        "id": "post3",
+        "content": "Hot take: distributed systems is underrated",
+        "likes": 116
+      },
+      {
+        "createdAt": "2025-11-17",
+        "id": "post4",
+        "content": "Exploring the intersection of community building and community",
+        "likes": 7
+      },
+      {
+        "createdAt": "2025-12-01",
+        "id": "post5",
+        "content": "Reminder: data science office hours tomorrow",
+        "likes": 23
+      },
+      {
+        "createdAt": "2025-04-28",
+        "id": "post6",
+        "content": "Just discovered machine learning \u2014 mind blown!",
+        "likes": 483
+      },
+      {
+        "createdAt": "2026-02-27",
+        "id": "post7",
+        "content": "Anyone else obsessed with recommendation engines?",
+        "likes": 446
+      },
+      {
+        "createdAt": "2025-08-23",
+        "id": "post8",
+        "content": "Just discovered machine learning \u2014 mind blown!",
+        "likes": 245
+      },
+      {
+        "createdAt": "2026-01-16",
+        "id": "post9",
+        "content": "DevOps is the future. Change my mind.",
+        "likes": 494
+      },
+      {
+        "createdAt": "2025-08-19",
+        "id": "post10",
+        "content": "Just discovered design systems \u2014 mind blown!",
+        "likes": 58
+      }
+    ],
+    "Hashtag": [
+      {
+        "name": "graph-databases"
+      },
+      {
+        "name": "AI"
+      },
+      {
+        "name": "open-source"
+      },
+      {
+        "name": "Python"
+      },
+      {
+        "name": "data-science"
+      },
+      {
+        "name": "community-building"
+      },
+      {
+        "name": "distributed-systems"
+      },
+      {
+        "name": "web3"
+      },
+      {
+        "name": "design-systems"
+      },
+      {
+        "name": "machine-learning"
+      }
+    ],
+    "Community": [
+      {
+        "name": "Graph Explorers",
+        "description": "A community for graph database enthusiasts",
+        "id": "c1"
+      },
+      {
+        "name": "Python Coders",
+        "description": "Pythonistas sharing tips, tricks, and projects",
+        "id": "c2"
+      },
+      {
+        "name": "AI Builders",
+        "description": "Building intelligent systems with AI",
+        "id": "c3"
+      },
+      {
+        "name": "Open Source Society",
+        "description": "Free software advocates and contributors",
+        "id": "c4"
+      },
+      {
+        "name": "Data Scientists Guild",
+        "description": "Practitioners of data science in all forms",
+        "id": "c5"
+      },
+      {
+        "name": "Neo4j Users",
+        "description": "Official Neo4j user group",
+        "id": "c6"
+      },
+      {
+        "name": "Graph Theorists",
+        "description": "Academic and applied graph theory",
+        "id": "c7"
+      },
+      {
+        "name": "Recommendation Engine Club",
+        "description": "Building recommender systems at scale",
+        "id": "c8"
+      },
+      {
+        "name": "Knowledge Graph Network",
+        "description": "Crafting knowledge graphs from real data",
+        "id": "c9"
+      },
+      {
+        "name": "ML Practitioners",
+        "description": "Machine learning researchers and practitioners",
+        "id": "c10"
+      }
+    ]
+  }
+}

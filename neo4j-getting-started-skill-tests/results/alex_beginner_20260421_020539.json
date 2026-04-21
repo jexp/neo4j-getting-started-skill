@@ -1,0 +1,54 @@
+{
+  "persona_id": "alex_beginner",
+  "started_at": "2026-04-21T01:57:56.649391",
+  "ended_at": "2026-04-21T02:05:38.020075",
+  "total_seconds": 461.36114406585693,
+  "passed": true,
+  "gate_summary": "7/7 gates passed",
+  "gates": [
+    {
+      "id": "db_running",
+      "passed": true,
+      "message": "Connected successfully",
+      "elapsed_ms": 332
+    },
+    {
+      "id": "model_valid",
+      "passed": true,
+      "message": "3 labels, 5 rel types, 3 constraints",
+      "elapsed_ms": 114
+    },
+    {
+      "id": "data_present",
+      "passed": true,
+      "message": "330 nodes present",
+      "elapsed_ms": 87
+    },
+    {
+      "id": "queries_work",
+      "passed": true,
+      "message": "10/12 queries return results",
+      "elapsed_ms": 1067
+    },
+    {
+      "id": "graph_visible",
+      "passed": true,
+      "message": "Browser URL recorded: https://browser.neo4j.io/?connectURL=neo4j%2Bs%3A%2F%2Fneo4j",
+      "elapsed_ms": 1
+    },
+    {
+      "id": "app_generated",
+      "passed": true,
+      "message": "notebook.ipynb generated and valid",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "time_budget",
+      "passed": true,
+      "message": "461.4s / 900s limit",
+      "elapsed_ms": 0
+    }
+  ],
+  "work_dir": "/var/folders/4z/831gnw5s78dd39__rqzkh4080000gp/T/neo4j_skill_alex_beginner_9z91r0gc",
+  "progress_md": "# Neo4j Getting-Started \u2014 Progress\n<!-- Resume: grep for \"status: pending\" to find the next stage -->\n\n### 0-prerequisites\nstatus: done\nPYTHON=/opt/homebrew/bin/python3.13\nNEO4J_MCP=/Users/mh/bin/neo4j-mcp\nVENV=.venv\n\n### 1-context\nstatus: done\nMODE=autonomous\nDOMAIN=social\nUSE_CASE=friend recommendations and community discovery\nEXPERIENCE=beginner\nDB_TARGET=aura-free\nDATA_SOURCE=synthetic\nAPP_TYPE=notebook\nEXEC_METHOD=cypher-shell\nCLOUD_PROVIDER=gcp\nREGION_HINT=europe-west\n\n### 2-provision\nstatus: done\nNEO4J_URI=neo4j+s://376be46b.databases.neo4j.io\nNEO4J_USERNAME=neo4j\nNEO4J_DATABASE=neo4j\nINSTANCE_ID=376be46b\nfiles=scripts/provision_aura.py\n\n### 3-model\nstatus: done\nlabels=Person,Post,Hashtag,Community\nrelationships=FOLLOWS,POSTED,LIKED,TAGGED,MEMBER_OF\nconstraints=4\nfiles=schema/schema.json,schema/schema.cypher\nsample_id=p1\n\n### 4-load\nstatus: done\nnodes=200 Person,100 Post,20 Hashtag,10 Community\nrelationships=2800 FOLLOWS,780 LIKED,269 MEMBER_OF,197 TAGGED,100 POSTED\nfiles=data/generate.py,data/import.py,schema/reset.cypher\nsample_id=p1\n\n### 5-explore\nstatus: done\nbrowser_url=https://browser.neo4j.io/?connectURL=neo4j%2Bs%3A%2F%2Fneo4j%40376be46b.databases.neo4j.io\nviz_method=browser+notebook-neo4j-viz\n\n### 6-query\nstatus: done\nqueries_total=12\ntraversal_queries=8\nqueries_returning_rows=6\nfiles=queries/queries.cypher\n\n### 7-build\nstatus: done\nartifact=notebook.ipynb\napp_type=notebook\nrun_command=.venv/bin/jupyter notebook notebook.ipynb\nfiles=notebook.ipynb,requirements.txt\n"
+}

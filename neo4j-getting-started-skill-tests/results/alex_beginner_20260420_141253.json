@@ -1,0 +1,54 @@
+{
+  "persona_id": "alex_beginner",
+  "started_at": "2026-04-20T14:06:27.025398",
+  "ended_at": "2026-04-20T14:12:51.806131",
+  "total_seconds": 384.76468896865845,
+  "passed": false,
+  "gate_summary": "2/7 gates passed",
+  "gates": [
+    {
+      "id": "db_running",
+      "passed": true,
+      "message": "Connected successfully",
+      "elapsed_ms": 301
+    },
+    {
+      "id": "model_valid",
+      "passed": false,
+      "message": "Only 0 node labels (need \u22652): []",
+      "elapsed_ms": 261
+    },
+    {
+      "id": "data_present",
+      "passed": false,
+      "message": "Only 0 nodes (need \u226550)",
+      "elapsed_ms": 98
+    },
+    {
+      "id": "queries_work",
+      "passed": false,
+      "message": "queries/queries.cypher not found",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "graph_visible",
+      "passed": false,
+      "message": "No browser_url found in progress.md (5-explore section)",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "app_generated",
+      "passed": false,
+      "message": "None of ['notebook.ipynb'] found in work dir",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "time_budget",
+      "passed": true,
+      "message": "384.8s / 900s limit",
+      "elapsed_ms": 0
+    }
+  ],
+  "work_dir": "/var/folders/4z/831gnw5s78dd39__rqzkh4080000gp/T/neo4j_skill_alex_beginner_kxixrxfw",
+  "progress_md": "# Neo4j Getting-Started \u2014 Progress\n<!-- Resume: grep for \"status: pending\" to find the next stage -->\n\n### 0-prerequisites\nstatus: done\nPYTHON=/opt/homebrew/bin/python3.13\nNEO4J_MCP=/Users/mh/bin/neo4j-mcp\n\n### 1-context\nstatus: done\nDOMAIN=social\nUSE_CASE=friend recommendations and community discovery\nEXPERIENCE=beginner\nDB_TARGET=aura-free\nDATA_SOURCE=synthetic\nAPP_TYPE=notebook\nLANGUAGE=python\nEXEC_METHOD=mcp\n\n### 2-provision\nstatus: done\nNEO4J_URI=neo4j+s://4baa5132.databases.neo4j.io\nNEO4J_USERNAME=neo4j\nNEO4J_DATABASE=neo4j\nINSTANCE_ID=4baa5132\nfiles=scripts/provision_aura.py\nDOMAIN=social\nUSE_CASE=friend recommendations and community discovery\nEXPERIENCE=beginner\nDB_TARGET=aura-free\nDATA_SOURCE=synthetic\nAPP_TYPE=notebook\nLANGUAGE=python\nEXEC_METHOD=mcp\n"
+}

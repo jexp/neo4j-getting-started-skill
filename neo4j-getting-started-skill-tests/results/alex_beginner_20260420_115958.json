@@ -1,0 +1,48 @@
+{
+  "persona_id": "alex_beginner",
+  "started_at": "2026-04-20T11:50:47.784128",
+  "ended_at": "2026-04-20T11:59:55.679693",
+  "total_seconds": 547.8782579898834,
+  "passed": true,
+  "gate_summary": "6/6 gates passed",
+  "gates": [
+    {
+      "id": "db_running",
+      "passed": true,
+      "message": "Connected successfully",
+      "elapsed_ms": 310
+    },
+    {
+      "id": "model_valid",
+      "passed": true,
+      "message": "4 labels, 5 relationship types",
+      "elapsed_ms": 187
+    },
+    {
+      "id": "data_present",
+      "passed": true,
+      "message": "530 nodes present",
+      "elapsed_ms": 99
+    },
+    {
+      "id": "queries_work",
+      "passed": true,
+      "message": "5/10 queries return results",
+      "elapsed_ms": 1248
+    },
+    {
+      "id": "app_generated",
+      "passed": true,
+      "message": "notebook.ipynb generated and valid",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "time_budget",
+      "passed": true,
+      "message": "547.9s / 900s limit",
+      "elapsed_ms": 0
+    }
+  ],
+  "work_dir": "/var/folders/4z/831gnw5s78dd39__rqzkh4080000gp/T/neo4j_skill_alex_beginner_7sf3g7ge",
+  "progress_md": "# Neo4j Getting-Started \u2014 Progress\n<!-- Resume: grep for \"status: pending\" to find the next stage -->\n\n### 0-prerequisites\nstatus: done\nPYTHON=/opt/homebrew/bin/python3.13\n\n### 1-context\nstatus: done\nDOMAIN=social\nUSE_CASE=friend recommendations and community discovery\nEXPERIENCE=beginner\nDB_TARGET=aura-free\nDATA_SOURCE=synthetic\nAPP_TYPE=notebook\nEXEC_METHOD=query-api\n\n### 2-provision\nstatus: done\nNEO4J_URI=neo4j+s://f1cad593.databases.neo4j.io\n\n### 3-model\nstatus: done\nlabels=Person,Post,Hashtag,Community\nrelationships=FOLLOWS,POSTED,TAGGED,MEMBER_OF,LIKED\nconstraints=4\n\n### 4-load\nstatus: done\nnodes=200 Person, 300 Post, 20 Hashtag, 10 Community\nrelationships=2310 FOLLOWS, 300 POSTED, 600 TAGGED, 499 MEMBER_OF, 1733 LIKED\n\n### 5-explore\nstatus: done\nbrowser_url=https://browser.neo4j.io/?connectURL=neo4j%2Bs%3A%2F%2Fneo4j%40f1cad593.databases.neo4j.io\nviz_method=browser\n\n### 6-query\nstatus: done\nqueries_total=10\ntraversal_queries=6\nqueries_returning_rows=5\n\n### 7-build\nstatus: done\nartifact=notebook.ipynb\napp_type=notebook\nrun_command=jupyter notebook notebook.ipynb\n"
+}

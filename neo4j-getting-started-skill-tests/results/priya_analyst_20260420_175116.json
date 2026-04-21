@@ -1,0 +1,60 @@
+{
+  "persona_id": "priya_analyst",
+  "started_at": "2026-04-20T17:40:07.085418",
+  "ended_at": "2026-04-20T17:51:10.483396",
+  "total_seconds": 663.3708910942078,
+  "passed": false,
+  "gate_summary": "7/8 gates passed",
+  "gates": [
+    {
+      "id": "db_running",
+      "passed": true,
+      "message": "Connected successfully",
+      "elapsed_ms": 395
+    },
+    {
+      "id": "model_valid",
+      "passed": true,
+      "message": "4 labels, 5 rel types, 4 constraints",
+      "elapsed_ms": 141
+    },
+    {
+      "id": "data_present",
+      "passed": true,
+      "message": "1660 nodes present",
+      "elapsed_ms": 90
+    },
+    {
+      "id": "queries_work",
+      "passed": true,
+      "message": "9/10 queries return results",
+      "elapsed_ms": 4415
+    },
+    {
+      "id": "graph_visible",
+      "passed": true,
+      "message": "Browser URL recorded: https://browser.neo4j.io/?connectURL=neo4j%2Bs%3A%2F%2Fneo4j",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "app_generated",
+      "passed": true,
+      "message": "app.py generated and valid",
+      "elapsed_ms": 54
+    },
+    {
+      "id": "time_budget",
+      "passed": false,
+      "message": "Unknown gate: time_budget",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "time_budget",
+      "passed": true,
+      "message": "663.4s / 1200s limit",
+      "elapsed_ms": 0
+    }
+  ],
+  "work_dir": "/var/folders/4z/831gnw5s78dd39__rqzkh4080000gp/T/neo4j_skill_priya_analyst_edxk2jjp",
+  "progress_md": "# Neo4j Getting-Started \u2014 Progress\n<!-- Resume: grep for \"status: pending\" to find the next stage -->\n\n### 0-prerequisites\nstatus: done\nPYTHON=/opt/homebrew/bin/python3.13\nNEO4J_MCP=/Users/mh/bin/neo4j-mcp\n\n### 1-context\nstatus: done\nMODE=autonomous\nDOMAIN=financial services\nUSE_CASE=transaction fraud ring detection and suspicious account network analysis\nEXPERIENCE=intermediate\nDB_TARGET=aura-free\nDATA_SOURCE=synthetic\nAPP_TYPE=streamlit\nEXEC_METHOD=mcp\nREGION_HINT=europe-west\n\n### 2-provision\nstatus: done\nNEO4J_URI=neo4j+s://e4da2c15.databases.neo4j.io\nNEO4J_USERNAME=neo4j\nNEO4J_DATABASE=neo4j\nINSTANCE_ID=e4da2c15\nfiles=scripts/provision_aura.py\n\n### 3-model\nstatus: done\nlabels=Account,Transaction,Phone,Device,IPAddress\nrelationships=PERFORMS,BENEFITS_TO,USES_PHONE,VIA,FROM_IP\nconstraints=5\nfiles=schema/schema.json,schema/schema.cypher\nsample_id=acc_001\n\n### 4-load\nstatus: done\nnodes=1310 Transaction, 200 Account, 60 Phone, 50 Device, 40 IPAddress\nrelationships=1316 VIA, 1310 PERFORMS, 1310 BENEFITS_TO, 794 FROM_IP, 200 USES_PHONE\nfiles=data/generate.py,data/import.py,schema/reset.cypher\n\n### 5-explore\nstatus: done\nbrowser_url=https://browser.neo4j.io/?connectURL=neo4j%2Bs%3A%2F%2Fneo4j%40e4da2c15.databases.neo4j.io\nviz_method=browser\n\n### 6-query\nstatus: done\nqueries_total=10\ntraversal_queries=6\nqueries_returning_rows=8\nfiles=queries/queries.cypher\n\n### 7-build\nstatus: done\nartifact=app.py\napp_type=streamlit\nrun_command=streamlit run app.py\nfiles=app.py,requirements.txt\n"
+}

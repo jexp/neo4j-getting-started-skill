@@ -1,0 +1,428 @@
+{
+  "node_counts": [
+    {
+      "label": "Order",
+      "count": 502
+    },
+    {
+      "label": "Customer",
+      "count": 200
+    },
+    {
+      "label": "Review",
+      "count": 199
+    },
+    {
+      "label": "Product",
+      "count": 30
+    },
+    {
+      "label": "Category",
+      "count": 10
+    }
+  ],
+  "rel_counts": [
+    {
+      "type": "VIEWED",
+      "count": 1833
+    },
+    {
+      "type": "CONTAINS",
+      "count": 1271
+    },
+    {
+      "type": "PLACED",
+      "count": 502
+    },
+    {
+      "type": "WROTE",
+      "count": 199
+    },
+    {
+      "type": "REVIEWS",
+      "count": 199
+    },
+    {
+      "type": "BELONGS_TO",
+      "count": 30
+    },
+    {
+      "type": "SUBCATEGORY_OF",
+      "count": 5
+    }
+  ],
+  "constraints": [
+    {
+      "name": "category_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Category"
+      ],
+      "properties": [
+        "categoryId"
+      ]
+    },
+    {
+      "name": "customer_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Customer"
+      ],
+      "properties": [
+        "customerId"
+      ]
+    },
+    {
+      "name": "order_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Order"
+      ],
+      "properties": [
+        "orderId"
+      ]
+    },
+    {
+      "name": "product_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Product"
+      ],
+      "properties": [
+        "productId"
+      ]
+    },
+    {
+      "name": "review_id",
+      "type": "NODE_PROPERTY_UNIQUENESS",
+      "labelsOrTypes": [
+        "Review"
+      ],
+      "properties": [
+        "reviewId"
+      ]
+    }
+  ],
+  "sample_nodes": {
+    "Product": [
+      {
+        "productId": "prod001",
+        "price": 89.99,
+        "name": "Wireless Headphones Pro",
+        "description": "Wireless Headphones Pro \u2014 high quality electronics item by TechBrand.",
+        "brand": "TechBrand"
+      },
+      {
+        "productId": "prod002",
+        "price": 299.99,
+        "name": "Smart Watch Ultra",
+        "description": "Smart Watch Ultra \u2014 high quality smartphones item by TechBrand.",
+        "brand": "TechBrand"
+      },
+      {
+        "productId": "prod003",
+        "price": 49.99,
+        "name": "Bluetooth Speaker Portable",
+        "description": "Bluetooth Speaker Portable \u2014 high quality electronics item by UrbanGear.",
+        "brand": "UrbanGear"
+      },
+      {
+        "productId": "prod004",
+        "price": 79.99,
+        "name": "4K Webcam HD",
+        "description": "4K Webcam HD \u2014 high quality electronics item by TechBrand.",
+        "brand": "TechBrand"
+      },
+      {
+        "productId": "prod005",
+        "price": 39.99,
+        "name": "Gaming Mouse RGB",
+        "description": "Gaming Mouse RGB \u2014 high quality electronics item by TechBrand.",
+        "brand": "TechBrand"
+      },
+      {
+        "productId": "prod006",
+        "price": 999.99,
+        "name": "Ultrabook Laptop 14\"",
+        "description": "Ultrabook Laptop 14\" \u2014 high quality laptops item by TechBrand.",
+        "brand": "TechBrand"
+      },
+      {
+        "productId": "prod007",
+        "price": 129.99,
+        "name": "Mechanical Keyboard TKL",
+        "description": "Mechanical Keyboard TKL \u2014 high quality electronics item by TechBrand.",
+        "brand": "TechBrand"
+      },
+      {
+        "productId": "prod008",
+        "price": 34.99,
+        "name": "USB-C Hub 7-in-1",
+        "description": "USB-C Hub 7-in-1 \u2014 high quality electronics item by UrbanGear.",
+        "brand": "UrbanGear"
+      },
+      {
+        "productId": "prod009",
+        "price": 59.99,
+        "name": "Noise-Cancel Earbuds",
+        "description": "Noise-Cancel Earbuds \u2014 high quality smartphones item by TechBrand.",
+        "brand": "TechBrand"
+      },
+      {
+        "productId": "prod010",
+        "price": 44.99,
+        "name": "Portable Power Bank 20K",
+        "description": "Portable Power Bank 20K \u2014 high quality smartphones item by ValuePlus.",
+        "brand": "ValuePlus"
+      }
+    ],
+    "Category": [
+      {
+        "name": "Electronics",
+        "categoryId": "cat1",
+        "slug": "electronics"
+      },
+      {
+        "name": "Clothing",
+        "categoryId": "cat2",
+        "slug": "clothing"
+      },
+      {
+        "name": "Home & Garden",
+        "categoryId": "cat3",
+        "slug": "home-garden"
+      },
+      {
+        "name": "Sports",
+        "categoryId": "cat4",
+        "slug": "sports"
+      },
+      {
+        "name": "Books",
+        "categoryId": "cat5",
+        "slug": "books"
+      },
+      {
+        "name": "Smartphones",
+        "categoryId": "cat6",
+        "slug": "smartphones"
+      },
+      {
+        "name": "Laptops",
+        "categoryId": "cat7",
+        "slug": "laptops"
+      },
+      {
+        "name": "Men's Clothing",
+        "categoryId": "cat8",
+        "slug": "mens-clothing"
+      },
+      {
+        "name": "Women's Clothing",
+        "categoryId": "cat9",
+        "slug": "womens-clothing"
+      },
+      {
+        "name": "Running",
+        "categoryId": "cat10",
+        "slug": "running"
+      }
+    ],
+    "Order": [
+      {
+        "createdAt": "2025-05-08T15:24:14.000000000+00:00",
+        "totalAmount": 364.94,
+        "orderId": "ord00001",
+        "status": "delivered"
+      },
+      {
+        "createdAt": "2025-10-26T15:24:14.000000000+00:00",
+        "totalAmount": 249.94,
+        "orderId": "ord00002",
+        "status": "delivered"
+      },
+      {
+        "createdAt": "2026-04-20T15:24:14.000000000+00:00",
+        "totalAmount": 169.96,
+        "orderId": "ord00003",
+        "status": "shipped"
+      },
+      {
+        "createdAt": "2026-02-16T15:24:14.000000000+00:00",
+        "totalAmount": 289.94,
+        "orderId": "ord00004",
+        "status": "delivered"
+      },
+      {
+        "createdAt": "2025-09-17T15:24:14.000000000+00:00",
+        "totalAmount": 2309.9,
+        "orderId": "ord00005",
+        "status": "delivered"
+      },
+      {
+        "createdAt": "2025-06-28T15:24:14.000000000+00:00",
+        "totalAmount": 584.92,
+        "orderId": "ord00006",
+        "status": "delivered"
+      },
+      {
+        "createdAt": "2025-05-31T15:24:14.000000000+00:00",
+        "totalAmount": 254.94,
+        "orderId": "ord00007",
+        "status": "delivered"
+      },
+      {
+        "createdAt": "2025-12-16T15:24:14.000000000+00:00",
+        "totalAmount": 464.9,
+        "orderId": "ord00008",
+        "status": "delivered"
+      },
+      {
+        "createdAt": "2026-02-04T15:24:14.000000000+00:00",
+        "totalAmount": 34.99,
+        "orderId": "ord00009",
+        "status": "delivered"
+      },
+      {
+        "createdAt": "2025-04-29T15:24:14.000000000+00:00",
+        "totalAmount": 534.94,
+        "orderId": "ord00010",
+        "status": "delivered"
+      }
+    ],
+    "Review": [
+      {
+        "createdAt": "2025-12-08T15:24:14.000000000+00:00",
+        "rating": 5,
+        "text": "Works perfectly, very happy with purchase.",
+        "reviewId": "rev00001"
+      },
+      {
+        "createdAt": "2026-03-01T15:24:14.000000000+00:00",
+        "rating": 4,
+        "text": "Average product, nothing special.",
+        "reviewId": "rev00002"
+      },
+      {
+        "createdAt": "2026-03-23T15:24:14.000000000+00:00",
+        "rating": 5,
+        "text": "Excellent! Exceeded my expectations.",
+        "reviewId": "rev00003"
+      },
+      {
+        "createdAt": "2026-04-17T15:24:14.000000000+00:00",
+        "rating": 5,
+        "text": "Fast delivery and great packaging.",
+        "reviewId": "rev00004"
+      },
+      {
+        "createdAt": "2026-03-21T15:24:14.000000000+00:00",
+        "rating": 5,
+        "text": "Quality is good but a bit overpriced.",
+        "reviewId": "rev00005"
+      },
+      {
+        "createdAt": "2026-04-10T15:24:14.000000000+00:00",
+        "rating": 5,
+        "text": "Great product, exactly as described!",
+        "reviewId": "rev00006"
+      },
+      {
+        "createdAt": "2026-01-15T15:24:14.000000000+00:00",
+        "rating": 5,
+        "text": "Decent quality but shipping was slow.",
+        "reviewId": "rev00007"
+      },
+      {
+        "createdAt": "2026-03-28T15:24:14.000000000+00:00",
+        "rating": 4,
+        "text": "Highly recommend to anyone looking for this.",
+        "reviewId": "rev00008"
+      },
+      {
+        "createdAt": "2026-04-05T15:24:14.000000000+00:00",
+        "rating": 5,
+        "text": "Great product, exactly as described!",
+        "reviewId": "rev00009"
+      },
+      {
+        "createdAt": "2026-03-24T15:24:14.000000000+00:00",
+        "rating": 5,
+        "text": "Works perfectly, very happy with purchase.",
+        "reviewId": "rev00010"
+      }
+    ],
+    "Customer": [
+      {
+        "country": "UK",
+        "name": "Customer 1",
+        "customerId": "cust0001",
+        "registeredAt": "2026-02-28T15:24:14.000000000+00:00",
+        "email": "customer1@example.com"
+      },
+      {
+        "country": "CA",
+        "name": "Customer 2",
+        "customerId": "cust0002",
+        "registeredAt": "2024-12-05T15:24:14.000000000+00:00",
+        "email": "customer2@example.com"
+      },
+      {
+        "country": "FR",
+        "name": "Customer 3",
+        "customerId": "cust0003",
+        "registeredAt": "2025-07-09T15:24:14.000000000+00:00",
+        "email": "customer3@example.com"
+      },
+      {
+        "country": "UK",
+        "name": "Customer 4",
+        "customerId": "cust0004",
+        "registeredAt": "2025-10-24T15:24:14.000000000+00:00",
+        "email": "customer4@example.com"
+      },
+      {
+        "country": "NL",
+        "name": "Customer 5",
+        "customerId": "cust0005",
+        "registeredAt": "2023-12-08T15:24:14.000000000+00:00",
+        "email": "customer5@example.com"
+      },
+      {
+        "country": "US",
+        "name": "Customer 6",
+        "customerId": "cust0006",
+        "registeredAt": "2026-02-18T15:24:14.000000000+00:00",
+        "email": "customer6@example.com"
+      },
+      {
+        "country": "UK",
+        "name": "Customer 7",
+        "customerId": "cust0007",
+        "registeredAt": "2025-01-28T15:24:14.000000000+00:00",
+        "email": "customer7@example.com"
+      },
+      {
+        "country": "FR",
+        "name": "Customer 8",
+        "customerId": "cust0008",
+        "registeredAt": "2023-06-21T15:24:14.000000000+00:00",
+        "email": "customer8@example.com"
+      },
+      {
+        "country": "NL",
+        "name": "Customer 9",
+        "customerId": "cust0009",
+        "registeredAt": "2026-02-25T15:24:14.000000000+00:00",
+        "email": "customer9@example.com"
+      },
+      {
+        "country": "IN",
+        "name": "Customer 10",
+        "customerId": "cust0010",
+        "registeredAt": "2025-03-09T15:24:14.000000000+00:00",
+        "email": "customer10@example.com"
+      }
+    ]
+  }
+}

@@ -29,15 +29,14 @@ The `model` stage should have produced `schema.cypher`. For KG/documents, it typ
 CYPHER 25
 CREATE CONSTRAINT document_id IF NOT EXISTS FOR (d:Document) REQUIRE d.id IS UNIQUE;
 CREATE CONSTRAINT chunk_id IF NOT EXISTS FOR (c:Chunk) REQUIRE c.id IS UNIQUE;
-CREATE CONSTRAINT entity_id IF NOT EXISTS FOR (e:Entity) REQUIRE e.id IS UNIQUE;
-
-CREATE VECTOR INDEX chunk_embeddings IF NOT EXISTS
-  FOR (c:Chunk) ON (c.embedding)
-  OPTIONS { indexConfig: { `vector.dimensions`: 1536, `vector.similarity_function`: 'cosine' } };
+// SimpleKGPipeline stores all extracted entities under :__KGBuilder__ — always add this constraint
+CREATE CONSTRAINT kgbuilder_name IF NOT EXISTS FOR (e:__KGBuilder__) REQUIRE e.name IS NOT NULL;
 
 CREATE FULLTEXT INDEX entity_search IF NOT EXISTS
-  FOR (e:Entity) ON EACH [e.name];
+  FOR (e:__KGBuilder__) ON EACH [e.name];
 ```
+
+**Note**: Do NOT add `CREATE VECTOR INDEX` in schema.cypher for the documents path. The vector index must be created **after** ingestion using `create_vector_index()` from `neo4j_graphrag.indexes` (see Step K2). The `apply_schema()` Cypher parser can mishandle the `OPTIONS { ... }` block.
 
 Apply this before running the pipeline (`load` step L0).
 

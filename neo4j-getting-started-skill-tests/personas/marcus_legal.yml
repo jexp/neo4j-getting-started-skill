@@ -97,7 +97,7 @@ test_config:
   mode: autonomous
   timeout_seconds: 2700   # Aura provisioning (~90s) + GraphRAG ingestion + Streamlit build
 
-  # Runner copies fixture/data/docs/ into work_dir/data/docs/ — contracts live there
+  # Runner copies fixture/data/ into work_dir/data/ — contracts live there
   # fixture_dir is merged into work_dir before Claude starts (same as other fixtures)
   fixture_dir: "fixtures/marcus_contracts"
 
@@ -109,7 +109,7 @@ test_config:
     - prompt: "domain"
       response: "Legal — I work at a law firm reviewing commercial contracts"
     - prompt: "use.case"
-      response: "Contract investigation — I have 3 CUAD contract text files in data/docs/.
+      response: "Contract investigation — I have 3 CUAD contract text files in data/.
                  I want to extract key clause types and build a Streamlit chatbot so I can ask
                  questions like 'What are the termination conditions?' across all contracts at once"
     - prompt: "experience"
@@ -117,7 +117,7 @@ test_config:
     - prompt: "database"
       response: "Aura Free — I want the easiest cloud option"
     - prompt: "data"
-      response: "I have contract text files already in data/docs/ — please use those to build
+      response: "I have contract text files already in data/ — please use those to build
                  the knowledge graph with neo4j-graphrag"
     - prompt: "build"
       response: "A Streamlit chatbot where I can type a question about the contracts and get

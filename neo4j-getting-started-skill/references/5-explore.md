@@ -85,13 +85,15 @@ CYPHER 25
 MATCH (a:Account)-[t:TRANSFERRED_TO]->(b:Account)
 RETURN a, t, b LIMIT 50;
 
-// KG/RAG: show document-chunk-entity structure
+// KG/RAG: show document-chunk-entity structure (SimpleKGPipeline)
 CYPHER 25
-MATCH (d:Document)-[:HAS_CHUNK]->(c:Chunk)-[:MENTIONS]->(e:Entity)
-RETURN d, c, e LIMIT 50;
+MATCH (e:__KGBuilder__)-[:FROM_CHUNK]->(c:Chunk)-[:FROM_DOCUMENT]->(d)
+RETURN e, c, d LIMIT 50;
 ```
 
 ## On Completion — write to progress.md
+
+**CRITICAL: This write is a hard gate. Do it immediately after generating the URL — before moving to stage 6.**
 
 ```markdown
 ### 5-explore
@@ -100,10 +102,13 @@ browser_url=<the generated https://browser.neo4j.io/... URL>
 viz_method=<browser|notebook-neo4j-viz|vscode>
 ```
 
+The `browser_url` line in the `### 5-explore` section is validated by the test harness.
+Write it to `progress.md` even if APP_TYPE=streamlit or APP_TYPE=notebook — the browser URL is always useful.
+
 ## Completion condition
 
-- Browser URL printed to stdout (Option A), OR
-- Notebook visualization cell added (Option B), OR
-- VS Code extension suggested with connection details (Option C)
+- Browser URL printed to stdout (Option A) AND written to progress.md, OR
+- Notebook visualization cell added (Option B) AND browser_url written to progress.md, OR
+- VS Code extension suggested (Option C) AND browser_url written to progress.md
 
-At least Option A must always be delivered regardless of APP_TYPE.
+**Option A (browser_url) must always be delivered and recorded, regardless of APP_TYPE.**
